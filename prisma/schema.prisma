@@ -1,0 +1,111 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("MEMBER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Member {
+  id               String    @id @default(cuid())
+  membershipNumber String    @unique
+  fullName         String
+  email            String?   @unique
+  phone            String?
+  dateOfBirth      DateTime?
+  gender           String?
+  address          String?
+  city             String?
+  country          String?   @default("Ghana")
+  photo            String?
+  joinDate         DateTime  @default(now())
+  status           String    @default("Active")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  transactions     Transaction[]
+  attendances      Attendance[]
+  documents        Document[]     // ← Added this
+
+  @@map("members")
+}
+
+model Event {
+  id                 String   @id @default(cuid())
+  title              String
+  date               DateTime
+  time               String?
+  location           String
+  type               String   @default("Worship")
+  description        String?
+  expectedAttendance Int?     @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  attendances        Attendance[]
+
+  @@map("events")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  type        String
+  amount      Decimal
+  date        DateTime @default(now())
+  description String?
+  memberId    String?
+  recordedBy  String   @default("Admin")
+  createdAt   DateTime @default(now())
+
+  member      Member?  @relation(fields: [memberId], references: [id], onDelete: SetNull)
+
+  @@map("transactions")
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  memberId  String
+  eventId   String?
+  date      DateTime
+  status    String
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  event     Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@unique([memberId, date])
+  @@map("attendance")
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  title       String
+  url         String
+  type        String
+  fileSize    Int?
+  category    String?  @default("General")
+  memberId    String?
+  uploadedBy  String?  @default("Admin")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  member      Member?  @relation(fields: [memberId], references: [id], onDelete: SetNull)
+
+  @@map("documents")
+}
