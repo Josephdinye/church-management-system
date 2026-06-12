@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { churchConfig } from '@/lib/config';
 
 export default function MemberPrintPage() {
   const { id } = useParams();
@@ -28,10 +29,9 @@ export default function MemberPrintPage() {
           * { visibility: hidden !important; }
           .print-container, .print-container * { visibility: visible !important; }
           .print-container { 
-            position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 40px 60px !important;
+            position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 50px 70px !important;
           }
-          nav, header, aside, .sidebar, button, .no-print { display: none !important; }
-          body, html { margin: 0; padding: 0; background: white; }
+          .no-print { display: none !important; }
         }
       `}</style>
 
@@ -46,16 +46,13 @@ export default function MemberPrintPage() {
         {/* Letterhead */}
         <div style={{ textAlign: 'center', marginBottom: '50px', borderBottom: '5px solid #1e3a8a', paddingBottom: '35px' }}>
           <h1 style={{ fontSize: '38px', margin: '0', color: '#1e3a8a', letterSpacing: '1px' }}>
-            THE WORLD LIGHT CHAPEL
+            {churchConfig.name}
           </h1>
           <p style={{ margin: '12px 0 4px 0', fontSize: '17px', color: '#334155' }}>
-            P.O. Box 274 • Assin Fosu • Central Region, Ghana
+            {churchConfig.address}
           </p>
           <p style={{ margin: '4px 0', fontSize: '16px', color: '#334155' }}>
-            E-mail: info@worldlightchapel.org • Phone: +233 24 293 0467
-          </p>
-          <p style={{ margin: '8px 0 0 0', fontSize: '15px', color: '#64748b' }}>
-            Established 2001 | Serving with Love
+            E-mail: {churchConfig.email} • Phone: {churchConfig.phone}
           </p>
         </div>
 
@@ -68,7 +65,7 @@ export default function MemberPrintPage() {
           <div>
             <div style={{
               width: '240px',
-              height: '280px',           // Slightly taller frame
+              height: '300px',
               borderRadius: '12px',
               border: '8px solid #e5e7eb',
               overflow: 'hidden',
@@ -82,13 +79,13 @@ export default function MemberPrintPage() {
                   style={{ 
                     width: '100%', 
                     height: '100%', 
-                    objectFit: 'contain',     // ← Changed from 'cover' to 'contain'
+                    objectFit: 'contain',
                     backgroundColor: '#f8fafc'
                   }} 
                 />
               ) : (
                 <div style={{ 
-                  fontSize: '100px', 
+                  fontSize: '110px', 
                   paddingTop: '80px', 
                   textAlign: 'center', 
                   color: '#cbd5e1' 
@@ -97,7 +94,7 @@ export default function MemberPrintPage() {
             </div>
           </div>
 
-          {/* Details */}
+          {/* Member Details */}
           <div style={{ flex: 1 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '17px' }}>
               <tbody>
@@ -131,7 +128,7 @@ export default function MemberPrintPage() {
           fontSize: '14.5px',
           color: '#64748b'
         }}>
-          This document is officially issued by The World Light Chapel • {new Date().toLocaleDateString()}
+          This document is officially issued by {churchConfig.name} • {new Date().toLocaleDateString()}
         </div>
 
         <div className="no-print" style={{ textAlign: 'center', marginTop: '70px' }}>

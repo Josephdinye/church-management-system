@@ -35,7 +35,6 @@ export default function FinancesPage() {
   useEffect(() => {
     let result = [...transactions];
 
-    // Search by member name or membership number
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(tx => 
@@ -44,7 +43,6 @@ export default function FinancesPage() {
       );
     }
 
-    // Filter by type
     if (typeFilter !== 'All') {
       result = result.filter(tx => tx.type === typeFilter);
     }
@@ -69,25 +67,64 @@ export default function FinancesPage() {
         <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
           Church Finances
         </h1>
-        <p style={{ color: '#6b7280' }}>Manage Offerings, Tithes & Donations • Currency: Cedis (₵)</p>
+        <p style={{ color: '#6b7280' }}>Manage Tithes, Welfare, Offerings & Donations • Currency: Cedis (₵)</p>
       </div>
 
-      {/* Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-        {/* Keep your summary cards here */}
-      </div>
+      {/* Quick Record Buttons */}
+      <div style={{ marginBottom: '2.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <Link href="/dashboard/finances/record?type=tithe" style={{
+          padding: '16px 32px',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '9999px',
+          textDecoration: 'none',
+          fontWeight: '600',
+          boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.3)'
+        }}>
+          + Record New Tithe & Welfare
+        </Link>
 
-      <div style={{ marginBottom: '2rem' }}>
-        <Link href="/dashboard/finances/record" style={{
-          padding: '16px 36px',
+        <Link href="/dashboard/finances/record?type=offering" style={{
+          padding: '16px 32px',
           backgroundColor: '#4f46e5',
           color: 'white',
           borderRadius: '9999px',
           textDecoration: 'none',
-          fontWeight: '600'
+          fontWeight: '600',
+          boxShadow: '0 4px 6px -1px rgba(79, 70, 229, 0.3)'
         }}>
-          + Record New Contribution
+          + Record New Offering & Donation
         </Link>
+      </div>
+
+      {/* Reports Section */}
+      <div style={{ marginBottom: '3rem' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '1rem' }}>Financial Reports</h2>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <Link href="/dashboard/finances/member-report" style={{
+            padding: '16px 32px',
+            backgroundColor: 'white',
+            border: '2px solid #4f46e5',
+            color: '#4f46e5',
+            borderRadius: '9999px',
+            textDecoration: 'none',
+            fontWeight: '600'
+          }}>
+            📊 Member Financial History
+          </Link>
+
+          <Link href="/dashboard/finances/church-report" style={{
+            padding: '16px 32px',
+            backgroundColor: 'white',
+            border: '2px solid #10b981',
+            color: '#10b981',
+            borderRadius: '9999px',
+            textDecoration: 'none',
+            fontWeight: '600'
+          }}>
+            📈 Church Offerings & Contributions Report
+          </Link>
+        </div>
       </div>
 
       {/* Search & Filter */}
@@ -126,8 +163,9 @@ export default function FinancesPage() {
         >
           <option value="All">All Types</option>
           <option value="Tithe">Tithe</option>
+          <option value="Welfare">Welfare</option>
           <option value="Offering">Offering</option>
-          <option value="Special Donation">Special Donation</option>
+          <option value="Donation">Donation</option>
         </select>
       </div>
 

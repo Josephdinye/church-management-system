@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function AttendancePage() {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const today = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(today);
   const [searchTerm, setSearchTerm] = useState('');
   const [members, setMembers] = useState([]);
   const [attendanceRecords, setAttendanceRecords] = useState([]);
@@ -36,14 +37,18 @@ export default function AttendancePage() {
   };
 
   const markAttendance = async (memberId: string, status: string) => {
+    if (selectedDate > today) {
+      alert("❌ You cannot mark attendance for future dates.");
+      return;
+    }
+
     try {
-      const existingRecord = attendanceRecords.find(a => a.memberId === memberId);
+      const existingRecord = attendanceRecords.find((a: any) => a.memberId === memberId);
       
-      // Check if locked (more than 1 hour old)
       if (existingRecord) {
         const hoursDiff = (new Date().getTime() - new Date(existingRecord.createdAt).getTime()) / (1000 * 60 * 60);
         if (hoursDiff > 1) {
-          alert("❌ This attendance record is locked (more than 1 hour old). You can no longer change it.");
+          alert("❌ This attendance record is locked (more than 1 hour old).");
           return;
         }
       }
@@ -58,7 +63,7 @@ export default function AttendancePage() {
         }),
       });
       
-      fetchData(); // Refresh
+      fetchData();
     } catch (error) {
       alert('Failed to mark attendance');
     }
@@ -78,7 +83,9 @@ export default function AttendancePage() {
           <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
             Attendance
           </h1>
-          <p style={{ color: '#6b7280' }}>Mark and track service attendance • Changes allowed within 1 hour</p>
+          <p style={{ color: '#6b7280' }}>
+            Mark and track service attendance • Future dates are locked
+          </p>
         </div>
       </div>
 
@@ -88,6 +95,7 @@ export default function AttendancePage() {
         <input
           type="date"
           value={selectedDate}
+          max={today}
           onChange={(e) => setSelectedDate(e.target.value)}
           style={{
             padding: '10px 16px',
@@ -139,7 +147,7 @@ export default function AttendancePage() {
         }}
       />
 
-      {/* Attendance List */}
+      {/* Attendance List with Photos */}
       <div style={{
         backgroundColor: 'white',
         borderRadius: '12px',
@@ -164,19 +172,38 @@ export default function AttendancePage() {
                 alignItems: 'center'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  {/* Member Photo */}
                   <div style={{
-                    width: '48px',
-                    height: '48px',
-                    backgroundColor: '#e0e7ff',
+                    width: '52px',
+                    height: '52px',
                     borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: 'bold',
-                    color: '#4f46e5'
+                    overflow: 'hidden',
+                    border: '2px solid #e5e7eb',
+                    backgroundColor: '#f8fafc'
                   }}>
-                    {member.fullName?.[0]}
+                    {member.photo ? (
+                      <img 
+                        src={member.photo} 
+                        alt={member.fullName}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: '#e0e7ff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '22px',
+                        color: '#4f46e5',
+                        fontWeight: 'bold'
+                      }}>
+                        {member.fullName?.[0] || '👤'}
+                      </div>
+                    )}
                   </div>
+
                   <div>
                     <p style={{ fontWeight: '600' }}>{member.fullName}</p>
                     <p style={{ color: '#6b7280', fontSize: '14px' }}>{member.membershipNumber}</p>
@@ -186,7 +213,7 @@ export default function AttendancePage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <button
                     onClick={() => markAttendance(member.id, 'Present')}
-                    disabled={isLocked}
+                    disabled={isLocked || selectedDate > today}
                     style={{
                       padding: '8px 20px',
                       backgroundColor: currentStatus === 'Present' ? '#10b981' : '#e5e7eb',
@@ -194,8 +221,8 @@ export default function AttendancePage() {
                       border: 'none',
                       borderRadius: '9999px',
                       fontWeight: '500',
-                      cursor: isLocked ? 'not-allowed' : 'pointer',
-                      opacity: isLocked ? 0.6 : 1
+                      cursor: (isLocked || selectedDate > today) ? 'not-allowed' : 'pointer',
+                      opacity: (isLocked || selectedDate > today) ? 0.6 : 1
                     }}
                   >
                     Present
@@ -203,7 +230,7 @@ export default function AttendancePage() {
 
                   <button
                     onClick={() => markAttendance(member.id, 'Absent')}
-                    disabled={isLocked}
+                    disabled={isLocked || selectedDate > today}
                     style={{
                       padding: '8px 20px',
                       backgroundColor: currentStatus === 'Absent' ? '#ef4444' : '#e5e7eb',
@@ -211,8 +238,8 @@ export default function AttendancePage() {
                       border: 'none',
                       borderRadius: '9999px',
                       fontWeight: '500',
-                      cursor: isLocked ? 'not-allowed' : 'pointer',
-                      opacity: isLocked ? 0.6 : 1
+                      cursor: (isLocked || selectedDate > today) ? 'not-allowed' : 'pointer',
+                      opacity: (isLocked || selectedDate > today) ? 0.6 : 1
                     }}
                   >
                     Absent

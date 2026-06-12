@@ -1,4 +1,4 @@
-// components/layout/Navbar.tsx
+// components/Navbar.tsx
 import Link from 'next/link';
 import { churchConfig } from '@/lib/config';
 
@@ -19,48 +19,28 @@ export default function Navbar() {
       boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
       borderBottom: '1px solid #e5e7eb'
     }}>
-      {/* Logo + Church Name (Clickable to Home) */}
+      {/* Logo + Name - Clickable to Home */}
       <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
-        <img 
-          src={churchConfig.logo} 
-          alt="Church Logo" 
-          style={{ height: '52px', width: 'auto' }} 
-        />
+        <img src={churchConfig.logo} alt="Logo" style={{ height: '52px' }} />
         <div>
-          <h1 style={{ 
-            fontSize: '26px', 
-            fontWeight: '700', 
-            margin: 0, 
-            color: '#1e3a8a' 
-          }}>
+          <h1 style={{ fontSize: '26px', fontWeight: '700', margin: 0, color: '#1e3a8a' }}>
             {churchConfig.name}
           </h1>
-          <p style={{ 
-            fontSize: '13px', 
-            margin: 0, 
-            color: '#64748b' 
-          }}>
-            {churchConfig.shortName}
-          </p>
+          <p style={{ fontSize: '13px', margin: 0, color: '#64748b' }}>{churchConfig.shortName}</p>
         </div>
       </Link>
 
       {/* Navigation Links */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '32px', 
-        fontSize: '15.5px', 
-        fontWeight: '500' 
-      }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '32px', fontSize: '15.5px', fontWeight: '500' }}>
         <Link href="/" style={{ color: '#334155', textDecoration: 'none' }}>Home</Link>
         <Link href="/about" style={{ color: '#334155', textDecoration: 'none' }}>About</Link>
         <Link href="/events" style={{ color: '#334155', textDecoration: 'none' }}>Events</Link>
         <Link href="/ministries" style={{ color: '#334155', textDecoration: 'none' }}>Ministries</Link>
         <Link href="/give" style={{ color: '#334155', textDecoration: 'none' }}>Give</Link>
+        <Link href="/contact" style={{ color: '#334155', textDecoration: 'none' }}>Contact</Link>
       </div>
 
-      {/* Admin Portal Button */}
+      {/* Admin Portal */}
       <Link href="/login" style={{
         padding: '13px 32px',
         backgroundColor: '#1e3a8a',
@@ -68,8 +48,7 @@ export default function Navbar() {
         borderRadius: '9999px',
         textDecoration: 'none',
         fontWeight: '600',
-        fontSize: '15.5px',
-        boxShadow: '0 4px 12px rgba(30, 58, 138, 0.3)'
+        fontSize: '15.5px'
       }}>
         Admin Portal
       </Link>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import { churchConfig } from '@/lib/config';
 
 export default function DashboardLayout({
   children,
@@ -49,14 +50,19 @@ export default function DashboardLayout({
         <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src="/logo.png" alt="Logo" style={{ height: '40px', width: '40px' }} />
-            {sidebarOpen && <h1 style={{ fontSize: '22px', fontWeight: 'bold' }}>ChurchHub</h1>}
+            {sidebarOpen && (
+              <h1 style={{ fontSize: '22px', fontWeight: 'bold' }}>
+                {churchConfig.name}
+              </h1>
+            )}
           </div>
         </div>
 
         <nav style={{ padding: '1rem', flex: 1 }}>
           {navItems.map((item) => {
-            const isActive = pathname === item.href ||
+            const isActive = pathname === item.href || 
               (item.href !== '/dashboard' && pathname?.startsWith(item.href));
+            
             return (
               <Link
                 key={item.href}
@@ -98,7 +104,6 @@ export default function DashboardLayout({
               alignItems: 'center',
               justifyContent: sidebarOpen ? 'flex-start' : 'center',
               gap: '8px',
-              fontSize: '14px',
             }}
           >
             <span>🚪</span>
@@ -147,6 +152,9 @@ export default function DashboardLayout({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontWeight: '600', margin: 0 }}>{churchConfig.name}</p>
+            </div>
             <button
               onClick={handleLogout}
               style={{
@@ -157,10 +165,9 @@ export default function DashboardLayout({
                 borderRadius: '8px',
                 fontWeight: '600',
                 cursor: 'pointer',
-                fontSize: '14px',
               }}
             >
-              🚪 Logout
+              Logout
             </button>
           </div>
         </header>

@@ -1,8 +1,8 @@
-// app/dashboard/attendance/history/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { churchConfig } from '@/lib/config';
 
 export default function AttendanceHistoryPage() {
   const searchParams = useSearchParams();
@@ -30,7 +30,7 @@ export default function AttendanceHistoryPage() {
       if (memberRes.ok) setMember(await memberRes.json());
       if (historyRes.ok) {
         const data = await historyRes.json();
-        const sorted = (data.attendances || []).sort((a, b) => 
+        const sorted = (data.attendances || []).sort((a: any, b: any) => 
           new Date(b.date).getTime() - new Date(a.date).getTime()
         );
         setHistory(sorted);
@@ -43,7 +43,7 @@ export default function AttendanceHistoryPage() {
     }
   };
 
-  // Filter by date range
+  // Date range filter
   useEffect(() => {
     let result = [...history];
 
@@ -59,17 +59,18 @@ export default function AttendanceHistoryPage() {
 
   const handlePrint = () => window.print();
 
-  if (loading) return <div style={{ padding: '100px', textAlign: 'center' }}>Loading...</div>;
+  if (loading) return <div style={{ padding: '100px', textAlign: 'center' }}>Loading attendance history...</div>;
   if (!member) return <div>Member not found.</div>;
 
   return (
     <>
       <style jsx global>{`
         @media print {
-          * { visibility: hidden; }
-          .print-container, .print-container * { visibility: visible; }
-          .print-container { position: absolute; left: 0; top: 0; width: 100%; }
+          * { visibility: hidden !important; }
+          .print-container, .print-container * { visibility: visible !important; }
+          .print-container { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 40px 60px !important; }
           .no-print { display: none !important; }
+          body { margin: 0; padding: 0; }
         }
       `}</style>
 
@@ -78,39 +79,42 @@ export default function AttendanceHistoryPage() {
         maxWidth: '900px', 
         margin: '0 auto', 
         fontFamily: 'Georgia, serif',
-        background: 'white'
+        background: 'white',
+        lineHeight: '1.6'
       }}>
         {/* Letterhead */}
         <div style={{ textAlign: 'center', marginBottom: '50px', borderBottom: '4px solid #1e3a8a', paddingBottom: '30px' }}>
-          <h1 style={{ fontSize: '36px', margin: '0', color: '#1e3a8a' }}>GRACE COMMUNITY CHURCH</h1>
+          <h1 style={{ fontSize: '36px', margin: '0', color: '#1e3a8a' }}> 
+             {churchConfig.name}</h1>
           <p style={{ margin: '12px 0 0 0', color: '#334155' }}>
-            123 Faith Avenue • Springfield • (555) 123-4567
+            {churchConfig.address}
           </p>
-          <p style={{ margin: '6px 0 0 0', fontSize: '15px', color: '#64748b' }}>
-            Established 1995 | Serving with Love
+          <p style={{ margin: '12px 0 0 0', color: '#334155' }}>
+            E-mail: {churchConfig.email} • Phone: {churchConfig.phone}
           </p>
         </div>
 
-        <h2 style={{ textAlign: 'center', color: '#1e3a8a', marginBottom: '20px' }}>ATTENDANCE HISTORY</h2>
+        <h2 style={{ textAlign: 'center', color: '#1e3a8a', marginBottom: '10px' }}>ATTENDANCE HISTORY</h2>
         <p style={{ textAlign: 'center', fontSize: '22px', marginBottom: '40px', fontWeight: '600' }}>
           {member.membershipNumber} — {member.fullName}
         </p>
 
-        {/* Date Range Filter - Visible on screen only */}
-        <div className="no-print" style={{ marginBottom: '30px', textAlign: 'center' }}>
-          <label>From: </label>
-          <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} style={{ margin: '0 10px' }} />
-          <label>To: </label>
-          <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} style={{ margin: '0 10px' }} />
-          <button onClick={() => {setFromDate(''); setToDate('');}} style={{ marginLeft: '15px' }}>Reset</button>
+        {/* Date Filter - Screen Only */}
+        <div className="no-print" style={{ marginBottom: '30px', textAlign: 'center', padding: '15px', backgroundColor: '#f8fafc', borderRadius: '8px' }}>
+          <label style={{ marginRight: '10px' }}>From:</label>
+          <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} style={{ marginRight: '15px' }} />
+          <label style={{ marginRight: '10px' }}>To:</label>
+          <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} style={{ marginRight: '15px' }} />
+          <button onClick={() => {setFromDate(''); setToDate('');}} style={{ padding: '6px 12px' }}>Reset</button>
         </div>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        {/* Attendance Table */}
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '60px' }}>
           <thead>
             <tr style={{ borderBottom: '3px solid #1e3a8a' }}>
-              <th style={{ padding: '16px', textAlign: 'left' }}>Date</th>
-              <th style={{ padding: '16px', textAlign: 'center' }}>Status</th>
-              <th style={{ padding: '16px', textAlign: 'left' }}>Notes</th>
+              <th style={{ padding: '16px', textAlign: 'left', fontWeight: '600' }}>Date</th>
+              <th style={{ padding: '16px', textAlign: 'center', fontWeight: '600' }}>Status</th>
+              <th style={{ padding: '16px', textAlign: 'left', fontWeight: '600' }}>Notes</th>
             </tr>
           </thead>
           <tbody>
@@ -126,43 +130,45 @@ export default function AttendanceHistoryPage() {
                 </td>
                 <td style={{ padding: '16px', textAlign: 'center' }}>
                   <span style={{
-                    padding: '8px 22px',
+                    padding: '8px 24px',
                     borderRadius: '9999px',
                     backgroundColor: att.status === 'Present' ? '#ecfdf5' : '#fef2f2',
-                    color: att.status === 'Present' ? '#10b981' : '#ef4444'
+                    color: att.status === 'Present' ? '#10b981' : '#ef4444',
+                    fontWeight: '600'
                   }}>
                     {att.status}
                   </span>
                 </td>
-                <td style={{ padding: '16px', color: '#6b7280' }}>{att.notes || '—'}</td>
+                <td style={{ padding: '16px', color: '#475569' }}>{att.notes || '—'}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <div style={{ marginTop: '80px', textAlign: 'center', borderTop: '1px dashed #94a3b8', paddingTop: '30px' }}>
+        <div style={{ textAlign: 'center', borderTop: '1px dashed #94a3b8', paddingTop: '30px', marginTop: '60px' }}>
           <p style={{ fontSize: '14px', color: '#64748b' }}>
-            This document is officially issued by Grace Community Church • {new Date().toLocaleDateString()}
+            This document is officially issued by {churchConfig.name} • {new Date().toLocaleDateString()}
           </p>
         </div>
       </div>
 
-      {/* Print Button */}
-      <div className="no-print" style={{ position: 'fixed', bottom: '40px', right: '40px' }}>
+      {/* Print Button - Visible only on screen */}
+      <div className="no-print" style={{ position: 'fixed', bottom: '40px', right: '40px', zIndex: 100 }}>
         <button 
           onClick={handlePrint}
           style={{
-            padding: '14px 32px',
+            padding: '14px 36px',
             backgroundColor: '#4f46e5',
             color: 'white',
             border: 'none',
             borderRadius: '9999px',
             fontSize: '16px',
             fontWeight: '600',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
           }}
         >
-          🖨️ Print History
+          🖨️ Print Attendance History
         </button>
       </div>
     </>

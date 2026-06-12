@@ -1,34 +1,38 @@
-// app/(dashboard)/finances/record/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function RecordFinancePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get('type'); // 'tithe' or 'offering'
+
   const [isLoading, setIsLoading] = useState(false);
   const [members, setMembers] = useState([]);
 
   const [formData, setFormData] = useState({
     memberId: '',
-    type: 'Tithe',
+    type: typeParam === 'tithe' ? 'Tithe' : 'Offering',
     amount: '',
     date: new Date().toISOString().split('T')[0],
     description: ''
   });
 
-  // Fetch members
+  // Fetch members only if it's Tithe/Welfare
   useEffect(() => {
-    fetch('/api/members')
-      .then(res => res.json())
-      .then(data => setMembers(data))
-      .catch(err => console.error(err));
-  }, []);
+    if (typeParam === 'tithe') {
+      fetch('/api/members')
+        .then(res => res.json())
+        .then(data => setMembers(data))
+        .catch(err => console.error(err));
+    }
+  }, [typeParam]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.amount || !formData.type) {
-      alert("Please fill amount and type");
+    if (!formData.amount) {
+      alert("Please enter an amount");
       return;
     }
 
@@ -62,10 +66,12 @@ export default function RecordFinancePage() {
     }
   };
 
+  const isTitheMode = typeParam === 'tithe';
+
   return (
     <div>
       <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '2rem' }}>
-        Record New Contribution
+        {isTitheMode ? 'Record New Tithe & Welfare' : 'Record New Offering & Donation'}
       </h1>
 
       <form onSubmit={handleSubmit} style={{ maxWidth: '620px' }}>
@@ -78,24 +84,27 @@ export default function RecordFinancePage() {
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-                Member <span style={{ color: 'red' }}>*</span>
-              </label>
-              <select
-                value={formData.memberId}
-                onChange={(e) => setFormData({ ...formData, memberId: e.target.value })}
-                required
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #d1d5db' }}
-              >
-                <option value="">Select Member</option>
-                {members.map((m: any) => (
-                  <option key={m.id} value={m.id}>
-                    {m.membershipNumber} — {m.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Member Selection - Only for Tithe */}
+            {isTitheMode && (
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                  Member <span style={{ color: 'red' }}>*</span>
+                </label>
+                <select
+                  value={formData.memberId}
+                  onChange={(e) => setFormData({ ...formData, memberId: e.target.value })}
+                  required
+                  style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+                >
+                  <option value="">Select Member</option>
+                  {members.map((m: any) => (
+                    <option key={m.id} value={m.id}>
+                      {m.membershipNumber} — {m.fullName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
@@ -106,9 +115,17 @@ export default function RecordFinancePage() {
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #d1d5db' }}
               >
-                <option value="Tithe">Tithe</option>
-                <option value="Offering">Offering</option>
-                <option value="Special Donation">Special Donation</option>
+                {isTitheMode ? (
+                  <>
+                    <option value="Tithe">Tithe</option>
+                    <option value="Welfare">Welfare</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="Offering">Offering</option>
+                    <option value="Donation">Donation</option>
+                  </>
+                )}
               </select>
             </div>
 
@@ -146,7 +163,7 @@ export default function RecordFinancePage() {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Purpose or additional notes..."
+                placeholder={isTitheMode ? "Weekly Tithe / Welfare purpose..." : "Service offering or donor details..."}
                 style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #d1d5db', minHeight: '90px' }}
               />
             </div>
@@ -168,7 +185,7 @@ export default function RecordFinancePage() {
               cursor: isLoading ? 'not-allowed' : 'pointer'
             }}
           >
-            {isLoading ? 'Recording...' : 'Record Contribution'}
+            {isLoading ? 'Recording...' : `Record ${formData.type}`}
           </button>
         </div>
       </form>

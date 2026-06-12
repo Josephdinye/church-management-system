@@ -1,9 +1,9 @@
-// app/(dashboard)/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import StatsCards from '@/components/dashboard/stats-cards';
 import Link from 'next/link';
+import { churchConfig } from '@/lib/config';
 
 export default function DashboardPage() {
   const [recentMembers, setRecentMembers] = useState([]);
@@ -27,7 +27,7 @@ export default function DashboardPage() {
         // Recent Members (latest 4)
         setRecentMembers(members.slice(0, 4));
 
-        // Upcoming Events
+        // Upcoming Events (sorted by date)
         const upcoming = events
           .filter((event: any) => new Date(event.date) >= new Date())
           .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -36,7 +36,7 @@ export default function DashboardPage() {
         setUpcomingEvents(upcoming);
 
       } catch (err) {
-        console.error(err);
+        console.error('Dashboard data fetch failed:', err);
         setError(true);
       } finally {
         setLoading(false);
@@ -51,10 +51,10 @@ export default function DashboardPage() {
       {/* Header */}
       <div style={{ marginBottom: '2.5rem' }}>
         <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
-          Church Dashboard
+          Welcome to {churchConfig.shortName}
         </h1>
         <p style={{ color: '#6b7280', fontSize: '18px' }}>
-          Welcome back! Here's what's happening in your church today.
+          Here's what's happening in your church today.
         </p>
       </div>
 
@@ -78,9 +78,9 @@ export default function DashboardPage() {
           </div>
 
           {loading ? (
-            <p style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>Loading members...</p>
+            <p style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>Loading recent members...</p>
           ) : error ? (
-            <p style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}>Failed to load members</p>
+            <p style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}>Unable to load members</p>
           ) : recentMembers.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {recentMembers.map((member: any) => (
@@ -108,14 +108,16 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p style={{ fontWeight: '600' }}>{member.fullName}</p>
-                      <p style={{ fontSize: '14px', color: '#6b7280' }}>Joined {new Date(member.joinDate).toLocaleDateString()}</p>
+                      <p style={{ fontSize: '14px', color: '#6b7280' }}>
+                        Joined {new Date(member.joinDate).toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>No members yet.</p>
+            <p style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>No members registered yet.</p>
           )}
         </div>
 
@@ -136,7 +138,7 @@ export default function DashboardPage() {
           {loading ? (
             <p style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>Loading events...</p>
           ) : error ? (
-            <p style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}>Failed to load events</p>
+            <p style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}>Unable to load events</p>
           ) : upcomingEvents.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {upcomingEvents.map((event: any) => (
@@ -151,7 +153,7 @@ export default function DashboardPage() {
                       weekday: 'short', 
                       month: 'short', 
                       day: 'numeric' 
-                    })} • {event.time}
+                    })} • {event.time || 'TBD'}
                   </p>
                   <p style={{ fontSize: '14px', color: '#6b7280' }}>{event.location}</p>
                 </div>
