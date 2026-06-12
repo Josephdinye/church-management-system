@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, email, password, churchId } = await request.json();
 
     // Validation
     if (!name || !email || !password) {
@@ -20,9 +20,25 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Get default church if churchId not provided
+    let finalChurchId = churchId;
+    if (!finalChurchId) {
+      const defaultChurch = await prisma.church.findFirst({
+        orderBy: { createdAt: 'asc' }
+      });
+      
+      if (!defaultChurch) {
+        return NextResponse.json({ 
+          error: 'No church found. Please create a church first.' 
+        }, { status: 400 });
+      }
+      
+      finalChurchId = defaultChurch.id;
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() }
+      where: { email: email.toLowerCase().trim() }
     });
 
     if (existingUser) {
@@ -40,7 +56,8 @@ export async function POST(request: NextRequest) {
         name: name.trim(),
         email: email.toLowerCase().trim(),
         password: hashedPassword,
-        role: 'ADMIN',        // First user becomes Admin
+        role: 'ADMIN',           // First user is Admin
+        churchId: finalChurchId,
       },
       select: {
         id: true,
@@ -57,7 +74,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Registration error:', error);
-    
     return NextResponse.json({ 
       error: 'Something went wrong. Please try again.' 
     }, { status: 500 });

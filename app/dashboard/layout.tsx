@@ -1,8 +1,10 @@
+// app/(dashboard)/layout.tsx
 'use client';
 
 import { useState } from 'react';
+import { useSession, SessionProvider } from 'next-auth/react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { churchConfig } from '@/lib/config';
 
@@ -11,14 +13,17 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  return (
+    <SessionProvider>
+      <DashboardContent>{children}</DashboardContent>
+    </SessionProvider>
+  );
+}
+
+function DashboardContent({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push('/login');
-  };
+  const { data: session } = useSession();
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: '🏠' },
@@ -29,6 +34,20 @@ export default function DashboardLayout({
     { href: '/dashboard/documents', label: 'Documents', icon: '📄' },
     { href: '/dashboard/settings', label: 'Settings', icon: '⚙️' },
   ];
+
+  const handleLogout = async () => {
+    try {
+      // Most reliable method
+      await signOut({ 
+        redirect: true, 
+        callbackUrl: '/login' 
+      });
+    } catch (error) {
+      // Fallback
+      console.error(error);
+      window.location.href = '/login';
+    }
+  };
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f9fafb' }}>
@@ -51,8 +70,8 @@ export default function DashboardLayout({
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src="/logo.png" alt="Logo" style={{ height: '40px', width: '40px' }} />
             {sidebarOpen && (
-              <h1 style={{ fontSize: '22px', fontWeight: 'bold' }}>
-                {churchConfig.name}
+              <h1 style={{ fontSize: '22px', fontWeight: 'bold', margin: 0 }}>
+                {churchConfig.shortName}
               </h1>
             )}
           </div>
@@ -86,39 +105,13 @@ export default function DashboardLayout({
             );
           })}
         </nav>
-
-        {/* Logout Button */}
-        <div style={{ padding: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
-          <button
-            onClick={handleLogout}
-            style={{
-              width: '100%',
-              padding: '12px',
-              backgroundColor: '#fee2e2',
-              color: '#ef4444',
-              border: 'none',
-              borderRadius: '8px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: sidebarOpen ? 'flex-start' : 'center',
-              gap: '8px',
-            }}
-          >
-            <span>🚪</span>
-            {sidebarOpen && <span>Logout</span>}
-          </button>
-        </div>
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <div style={{
         marginLeft: sidebarOpen ? '260px' : '70px',
         transition: 'margin-left 0.3s',
         flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
         minHeight: '100vh'
       }}>
         {/* Top Navbar */}
@@ -132,6 +125,7 @@ export default function DashboardLayout({
           position: 'sticky',
           top: 0,
           zIndex: 40,
+          height: '70px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <button
@@ -146,34 +140,38 @@ export default function DashboardLayout({
             >
               ☰
             </button>
-            <h2 style={{ fontSize: '22px', fontWeight: '600' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: '600', margin: 0 }}>
               {navItems.find(item => pathname?.startsWith(item.href))?.label || 'Dashboard'}
             </h2>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontWeight: '600', margin: 0 }}>{churchConfig.name}</p>
+              <p style={{ fontWeight: '600', margin: 0 }}>{session?.user?.name}</p>
+              <p style={{ fontSize: '14px', color: '#6b7280' }}>{session?.user?.email}</p>
             </div>
+
+            {/* Logout Button - Prominent */}
             <button
               onClick={handleLogout}
               style={{
-                padding: '8px 16px',
+                padding: '10px 22px',
                 backgroundColor: '#fee2e2',
                 color: '#ef4444',
                 border: 'none',
                 borderRadius: '8px',
                 fontWeight: '600',
                 cursor: 'pointer',
+                whiteSpace: 'nowrap'
               }}
             >
-              Logout
+              🚪 Logout
             </button>
           </div>
         </header>
 
         {/* Page Content */}
-        <main style={{ flex: 1, padding: '2rem' }}>
+        <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
           {children}
         </main>
       </div>

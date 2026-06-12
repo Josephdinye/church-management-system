@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Public paths that don't require authentication
-  const publicPaths = ['/login', '/register', '/', '/api/auth'];
+  const publicPaths = ['/login', '/', '/about', '/events', '/ministries', '/give', '/contact'];
 
   const isPublicPath = publicPaths.some(publicPath => 
     path === publicPath || path.startsWith(publicPath + '/')
@@ -16,7 +16,7 @@ export function middleware(request: NextRequest) {
                 request.cookies.get('__Secure-next-auth.session-token');
 
   // If user is on public path but already logged in → redirect to dashboard
-  if (isPublicPath && token && (path === '/login' || path === '/register')) {
+  if (isPublicPath && token && path === '/login') {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
@@ -32,6 +32,10 @@ export const config = {
   matcher: [
     '/dashboard/:path*',
     '/login',
-    '/register',
+    '/about',
+    '/events',
+    '/ministries',
+    '/give',
+    '/contact',
   ],
 };
