@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -59,7 +58,7 @@ export default function LoginPage() {
           <h1 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '8px' }}>
             Welcome Back
           </h1>
-          <p style={{ color: '#6b7280' }}>Sign in to your ChurchHub account</p>
+          <p style={{ color: '#6b7280' }}>Sign in to your Church Management System</p>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -135,11 +134,8 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '14px' }}>
-          Don&apos;t have an account?{' '}
-          <Link href="/register" style={{ color: '#4f46e5', textDecoration: 'none' }}>
-            Register here
-          </Link>
+        <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '14px', color: '#6b7280' }}>
+          Contact your church admin if you need access.
         </div>
       </div>
     </div>

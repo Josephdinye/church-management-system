@@ -40,7 +40,7 @@ export default function Navbar() {
         <Link href="/contact" style={{ color: '#334155', textDecoration: 'none' }}>Contact</Link>
       </div>
 
-      {/* Admin Portal */}
+      {/* Only Admin Login (Register removed) */}
       <Link href="/login" style={{
         padding: '13px 32px',
         backgroundColor: '#1e3a8a',
@@ -50,7 +50,7 @@ export default function Navbar() {
         fontWeight: '600',
         fontSize: '15.5px'
       }}>
-        Admin Portal
+        Admin Login
       </Link>
     </nav>
   );
