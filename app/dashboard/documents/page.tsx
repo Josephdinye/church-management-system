@@ -9,6 +9,10 @@ export default function DocumentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
 
+  // Delete Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<{id: string; title: string} | null>(null);
+
   const fetchDocuments = async () => {
     setLoading(true);
     try {
@@ -38,16 +42,27 @@ export default function DocumentsPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this document?')) return;
-    
+  const openDeleteModal = (id: string, title: string) => {
+    setDocumentToDelete({ id, title });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!documentToDelete) return;
+
     try {
-      const res = await fetch(`/api/documents/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/documents?id=${documentToDelete.id}`, { 
+        method: 'DELETE' 
+      });
+      
       if (res.ok) {
         fetchDocuments();
       }
     } catch (error) {
-      alert('Failed to delete document');
+      console.error(error);
+    } finally {
+      setShowDeleteModal(false);
+      setDocumentToDelete(null);
     }
   };
 
@@ -154,10 +169,10 @@ export default function DocumentsPage() {
                       📄 View / Download
                     </a>
                     <button 
-                      onClick={() => handleDelete(doc.id)}
+                      onClick={() => openDeleteModal(doc.id, doc.title)}
                       style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}
                     >
-                      Delete
+                      🗑️ Delete
                     </button>
                   </td>
                 </tr>
@@ -170,6 +185,51 @@ export default function DocumentsPage() {
               No documents found.
             </p>
           )}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && documentToDelete && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '2rem',
+            borderRadius: '12px',
+            width: '420px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ marginBottom: '1rem', color: '#ef4444' }}>Delete Document?</h3>
+            <p>Are you sure you want to delete <strong>"{documentToDelete.title}"</strong>?</p>
+            <p style={{ color: '#ef4444', marginTop: '1rem', fontWeight: '600' }}>
+              This action cannot be undone.
+            </p>
+
+            <div style={{ marginTop: '2rem', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button 
+                onClick={() => { setShowDeleteModal(false); setDocumentToDelete(null); }}
+                style={{ padding: '12px 28px', background: '#e5e7eb', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete}
+                style={{ padding: '12px 28px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

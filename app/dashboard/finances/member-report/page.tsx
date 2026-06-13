@@ -3,20 +3,30 @@
 import { useState, useEffect } from 'react';
 import { churchConfig } from '@/lib/config';
 
+type Transaction = {
+  id: string;
+  type: string;
+  amount: number;
+  date: string;
+  description?: string;
+};
+
 export default function MemberFinancialReport() {
-  const [members, setMembers] = useState([]);
+  const [members, setMembers] = useState<any[]>([]);
   const [selectedMemberId, setSelectedMemberId] = useState('');
-  const [transactions, setTransactions] = useState([]);
-  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [loading, setLoading] = useState(false);
 
+  // Load members
   useEffect(() => {
     fetch('/api/members')
       .then(res => res.json())
-      .then(data => setMembers(data));
+      .then(data => setMembers(data))
+      .catch(err => console.error(err));
   }, []);
 
   const fetchMemberTransactions = async (memberId: string) => {
@@ -26,7 +36,7 @@ export default function MemberFinancialReport() {
       const res = await fetch(`/api/finances?memberId=${memberId}`);
       if (res.ok) {
         const data = await res.json();
-        setTransactions(data.transactions || []);
+        setTransactions(data.transactions || data || []);
       }
     } catch (error) {
       console.error(error);
@@ -52,7 +62,7 @@ export default function MemberFinancialReport() {
     setFilteredTransactions(result);
   }, [transactions, fromDate, toDate, typeFilter]);
 
-  const totalAmount = filteredTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+  const totalAmount = filteredTransactions.reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
   const handlePrint = () => window.print();
 
@@ -69,10 +79,15 @@ export default function MemberFinancialReport() {
         }
       `}</style>
 
-      <div className="print-container" style={{ padding: '40px 60px', maxWidth: '1000px', margin: '0 auto', background: 'white' }}>
+      <div className="print-container" style={{ 
+        padding: '40px 60px', 
+        maxWidth: '1000px', 
+        margin: '0 auto', 
+        background: 'white',
+        fontFamily: 'Georgia, serif'
+      }}>
         {/* Letterhead */}
         <div style={{ textAlign: 'center', marginBottom: '40px', borderBottom: '4px solid #1e3a8a', paddingBottom: '25px' }}>
-          <img src={churchConfig.logo} alt="Logo" style={{ height: '80px', marginBottom: '15px' }} />
           <h1 style={{ fontSize: '36px', margin: '0', color: '#1e3a8a' }}>{churchConfig.name}</h1>
           <p style={{ margin: '8px 0', color: '#334155' }}>{churchConfig.address}</p>
         </div>
@@ -86,46 +101,68 @@ export default function MemberFinancialReport() {
           </div>
         )}
 
-        {/* Filters - Screen Only */}
-        <div className="no-print" style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8fafc', borderRadius: '12px' }}>
-          <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'end' }}>
-            <div>
-              <label>Select Member</label>
-              <select value={selectedMemberId} onChange={(e) => {
+        {/* Filters */}
+        <div className="no-print" style={{ 
+          backgroundColor: '#f8fafc', 
+          padding: '20px', 
+          borderRadius: '12px', 
+          marginBottom: '30px',
+          display: 'flex',
+          gap: '15px',
+          flexWrap: 'wrap',
+          alignItems: 'end'
+        }}>
+          <div>
+            <label>Select Member</label><br />
+            <select 
+              value={selectedMemberId} 
+              onChange={(e) => {
                 setSelectedMemberId(e.target.value);
                 fetchMemberTransactions(e.target.value);
-              }} style={{ width: '280px', padding: '10px', borderRadius: '8px' }}>
-                <option value="">-- Select Member --</option>
-                {members.map((m: any) => (
-                  <option key={m.id} value={m.id}>
-                    {m.membershipNumber} - {m.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label>From</label>
-              <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
-            </div>
-            <div>
-              <label>To</label>
-              <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
-            </div>
-
-            <div>
-              <label>Type</label>
-              <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-                <option value="All">All</option>
-                <option value="Tithe">Tithe</option>
-                <option value="Welfare">Welfare</option>
-              </select>
-            </div>
-
-            <button onClick={handlePrint} style={{ padding: '10px 24px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px' }}>
-              🖨️ Print Report
-            </button>
+              }} 
+              style={{ width: '280px', padding: '10px', borderRadius: '8px' }}
+            >
+              <option value="">-- Select Member --</option>
+              {members.map((m: any) => (
+                <option key={m.id} value={m.id}>
+                  {m.membershipNumber} - {m.fullName}
+                </option>
+              ))}
+            </select>
           </div>
+
+          <div>
+            <label>From</label><br />
+            <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+          </div>
+          <div>
+            <label>To</label><br />
+            <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+          </div>
+
+          <div>
+            <label>Type</label><br />
+            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+              <option value="All">All</option>
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+            </select>
+          </div>
+
+          <button 
+            onClick={handlePrint} 
+            style={{
+              padding: '10px 24px',
+              background: '#4f46e5',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+          >
+            🖨️ Print Report
+          </button>
         </div>
 
         {/* Transactions Table */}
@@ -139,11 +176,13 @@ export default function MemberFinancialReport() {
             </tr>
           </thead>
           <tbody>
-            {filteredTransactions.map((tx: any) => (
+            {filteredTransactions.map((tx: Transaction) => (
               <tr key={tx.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                 <td style={{ padding: '14px' }}>{new Date(tx.date).toLocaleDateString()}</td>
                 <td style={{ padding: '14px' }}>{tx.type}</td>
-                <td style={{ padding: '14px', textAlign: 'right', fontWeight: '600' }}>₵{Number(tx.amount).toLocaleString()}</td>
+                <td style={{ padding: '14px', textAlign: 'right', fontWeight: '600' }}>
+                  ₵{Number(tx.amount).toLocaleString()}
+                </td>
                 <td style={{ padding: '14px' }}>{tx.description || '—'}</td>
               </tr>
             ))}

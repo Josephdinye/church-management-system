@@ -1,12 +1,19 @@
-// app/(dashboard)/settings/users/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
+type ExtendedUser = {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role?: string;
+};
+
 export default function UsersManagementPage() {
   const { data: session } = useSession();
-  const isAdmin = session?.user?.role === 'ADMIN';
+  const user = session?.user as ExtendedUser | undefined;
+  const isAdmin = user?.role === 'ADMIN';
 
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,6 +21,10 @@ export default function UsersManagementPage() {
   const [editingUser, setEditingUser] = useState<any>(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
+
+  // Delete Confirmation Modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<{id: string; name: string} | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -77,25 +88,33 @@ export default function UsersManagementPage() {
     setFormData({
       name: user.name,
       email: user.email,
-      password: '',           // Password is optional when editing
+      password: '',
       role: user.role
     });
     setShowForm(true);
   };
 
-  const handleDelete = async (userId: string, userName: string) => {
-    if (!confirm(`Delete user "${userName}"? This action cannot be undone.`)) return;
+  const openDeleteModal = (userId: string, userName: string) => {
+    setUserToDelete({ id: userId, name: userName });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
 
     try {
-      const res = await fetch(`/api/users?id=${userId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/users?id=${userToDelete.id}`, { method: 'DELETE' });
       if (res.ok) {
-        setSuccessMessage(`✅ ${userName} has been deleted.`);
+        setSuccessMessage(`✅ ${userToDelete.name} has been deleted.`);
         fetchUsers();
       } else {
         setError('Failed to delete user');
       }
     } catch (err) {
       setError('Something went wrong');
+    } finally {
+      setShowDeleteModal(false);
+      setUserToDelete(null);
     }
   };
 
@@ -104,6 +123,10 @@ export default function UsersManagementPage() {
     setEditingUser(null);
     setShowForm(false);
   };
+
+  if (loading) {
+    return <p style={{ textAlign: 'center', padding: '40px' }}>Loading users...</p>;
+  }
 
   return (
     <div>
@@ -139,6 +162,7 @@ export default function UsersManagementPage() {
         <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', border: '1px solid #e5e7eb', marginBottom: '2rem' }}>
           <h2 style={{ marginBottom: '1.5rem' }}>{editingUser ? 'Edit User' : 'Create New User'}</h2>
           <form onSubmit={handleSubmit}>
+            {/* ... your existing form ... */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
               <div>
                 <label>Full Name *</label>
@@ -202,11 +226,14 @@ export default function UsersManagementPage() {
                 </td>
                 {isAdmin && (
                   <td style={{ padding: '1rem', textAlign: 'center' }}>
-                    <button onClick={() => handleEdit(user)} style={{ color: '#4f46e5', marginRight: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>
-                      Edit
+                    <button onClick={() => handleEdit(user)} style={{ color: '#4f46e5', marginRight: '16px', background: 'none', border: 'none', cursor: 'pointer' }}>
+                      ✏️ Edit
                     </button>
-                    <button onClick={() => handleDelete(user.id, user.name)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}>
-                      Delete
+                    <button 
+                      onClick={() => openDeleteModal(user.id, user.name)} 
+                      style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      🗑️ Delete
                     </button>
                   </td>
                 )}
@@ -215,6 +242,51 @@ export default function UsersManagementPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Custom Delete Confirmation Modal */}
+      {showDeleteModal && userToDelete && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '2rem',
+            borderRadius: '12px',
+            width: '400px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ marginBottom: '1rem', color: '#ef4444' }}>Confirm Delete</h3>
+            <p>Are you sure you want to delete <strong>{userToDelete.name}</strong>?</p>
+            <p style={{ color: '#ef4444', fontWeight: '600', marginTop: '1rem' }}>
+              This action cannot be undone.
+            </p>
+
+            <div style={{ marginTop: '2rem', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button 
+                onClick={() => { setShowDeleteModal(false); setUserToDelete(null); }}
+                style={{ padding: '12px 24px', background: '#e5e7eb', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete}
+                style={{ padding: '12px 24px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              >
+                Yes, Delete User
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

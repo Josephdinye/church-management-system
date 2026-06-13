@@ -87,7 +87,7 @@ export default function EventsPage() {
           Loading events...
         </div>
       ) : (
-        <EventTable events={filteredEvents} onRefresh={fetchEvents} />
+        <EventTable events={filteredEvents} />
       )}
 
       {filteredEvents.length === 0 && !loading && (

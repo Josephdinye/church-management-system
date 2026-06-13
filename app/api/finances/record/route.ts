@@ -6,6 +6,15 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
+    // Get default church
+    const church = await prisma.church.findFirst({
+      where: { slug: 'main-church' }
+    });
+
+    if (!church) {
+      return NextResponse.json({ error: 'Church not configured' }, { status: 400 });
+    }
+
     const transaction = await prisma.transaction.create({
       data: {
         type: data.type,
@@ -14,6 +23,7 @@ export async function POST(request: NextRequest) {
         description: data.description || '',
         memberId: data.memberId || null,
         recordedBy: "Admin",
+        churchId: church.id,           // ← This was missing
       },
       include: {
         member: true

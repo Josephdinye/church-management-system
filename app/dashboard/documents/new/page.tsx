@@ -7,6 +7,7 @@ export default function NewDocumentPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -25,6 +26,7 @@ export default function NewDocumentPage() {
 
     setIsLoading(true);
     setError('');
+    setSuccess('');
 
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
@@ -41,9 +43,17 @@ export default function NewDocumentPage() {
       const result = await res.json();
 
       if (res.ok) {
-        alert('✅ Document uploaded successfully!');
-        router.push('/dashboard/documents');
-        router.refresh();
+        setSuccess('✅ Document uploaded successfully!');
+        
+        // Clear form
+        setFormData({ title: '', category: 'General', memberId: '' });
+        setFile(null);
+        
+        // Redirect after short delay
+        setTimeout(() => {
+          router.push('/dashboard/documents');
+          router.refresh();
+        }, 1500);
       } else {
         setError(result.error || 'Upload failed');
       }
@@ -133,8 +143,27 @@ export default function NewDocumentPage() {
               </p>
             </div>
 
+            {/* Success Message */}
+            {success && (
+              <div style={{ 
+                color: '#10b981', 
+                backgroundColor: '#d1fae5', 
+                padding: '14px', 
+                borderRadius: '8px',
+                fontWeight: '500'
+              }}>
+                {success}
+              </div>
+            )}
+
+            {/* Error Message */}
             {error && (
-              <div style={{ color: '#ef4444', backgroundColor: '#fee2e2', padding: '12px', borderRadius: '8px' }}>
+              <div style={{ 
+                color: '#ef4444', 
+                backgroundColor: '#fee2e2', 
+                padding: '14px', 
+                borderRadius: '8px' 
+              }}>
                 {error}
               </div>
             )}

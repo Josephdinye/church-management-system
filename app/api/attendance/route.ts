@@ -33,6 +33,15 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
+    // Get default church
+    const church = await prisma.church.findFirst({
+      where: { slug: 'main-church' }
+    });
+
+    if (!church) {
+      return NextResponse.json({ error: 'Church configuration not found' }, { status: 400 });
+    }
+
     // Check if record exists and is still editable (within 1 hour)
     if (data.id) {
       const existing = await prisma.attendance.findUnique({ where: { id: data.id } });
@@ -60,6 +69,7 @@ export async function POST(request: NextRequest) {
         date: new Date(data.date),
         status: data.status,
         notes: data.notes || null,
+        churchId: church.id,           // ← This was missing
       }
     });
 

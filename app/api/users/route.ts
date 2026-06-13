@@ -30,6 +30,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Name, email and password are required" }, { status: 400 });
     }
 
+    // Get default church
+    const church = await prisma.church.findFirst({
+      where: { slug: 'main-church' }
+    });
+
+    if (!church) {
+      return NextResponse.json({ error: 'Church not configured' }, { status: 400 });
+    }
+
     const existingUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() }
     });
@@ -46,12 +55,18 @@ export async function POST(request: NextRequest) {
         email: email.toLowerCase().trim(),
         password: hashedPassword,
         role,
+        churchId: church.id,           // ← Fixed
       },
     });
 
     return NextResponse.json({
       message: "User created successfully",
-      user: { id: user.id, name: user.name, email: user.email, role: user.role }
+      user: { 
+        id: user.id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role 
+      }
     }, { status: 201 });
 
   } catch (error: any) {
@@ -60,7 +75,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// ✅ UPDATE USER
+// UPDATE USER
 export async function PUT(request: NextRequest) {
   try {
     const { id, name, email, password, role } = await request.json();
@@ -75,7 +90,6 @@ export async function PUT(request: NextRequest) {
       role,
     };
 
-    // Only update password if provided
     if (password && password.length > 0) {
       updateData.password = await bcrypt.hash(password, 12);
     }

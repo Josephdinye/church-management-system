@@ -1,15 +1,23 @@
-// app/(dashboard)/attendance/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+type AttendanceRecord = {
+  id: string;
+  memberId: string;
+  date: string;
+  status: string;
+  notes?: string;
+  createdAt: string;
+};
+
 export default function AttendancePage() {
   const today = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(today);
   const [searchTerm, setSearchTerm] = useState('');
-  const [members, setMembers] = useState([]);
-  const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [members, setMembers] = useState<any[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,7 +51,7 @@ export default function AttendancePage() {
     }
 
     try {
-      const existingRecord = attendanceRecords.find((a: any) => a.memberId === memberId);
+      const existingRecord = attendanceRecords.find((a: AttendanceRecord) => a.memberId === memberId);
       
       if (existingRecord) {
         const hoursDiff = (new Date().getTime() - new Date(existingRecord.createdAt).getTime()) / (1000 * 60 * 60);
@@ -147,7 +155,7 @@ export default function AttendancePage() {
         }}
       />
 
-      {/* Attendance List with Photos */}
+      {/* Attendance List */}
       <div style={{
         backgroundColor: 'white',
         borderRadius: '12px',
@@ -158,7 +166,7 @@ export default function AttendancePage() {
           <p style={{ padding: '2rem', textAlign: 'center' }}>Loading attendance...</p>
         ) : (
           filteredMembers.map((member: any) => {
-            const record = attendanceRecords.find((a: any) => a.memberId === member.id);
+            const record = attendanceRecords.find((a: AttendanceRecord) => a.memberId === member.id);
             const currentStatus = record?.status || 'Not Marked';
             const isLocked = record && 
               (new Date().getTime() - new Date(record.createdAt).getTime()) / (1000 * 60 * 60) > 1;
@@ -172,7 +180,6 @@ export default function AttendancePage() {
                 alignItems: 'center'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  {/* Member Photo */}
                   <div style={{
                     width: '52px',
                     height: '52px',

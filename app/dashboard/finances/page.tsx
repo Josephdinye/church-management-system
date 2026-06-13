@@ -4,9 +4,22 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+type Transaction = {
+  id: string;
+  type: string;
+  amount: number;
+  date: string;
+  description?: string;
+  member?: {
+    id: string;
+    fullName: string;
+    membershipNumber: string;
+  };
+};
+
 export default function FinancesPage() {
-  const [transactions, setTransactions] = useState([]);
-  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [loading, setLoading] = useState(true);
@@ -21,8 +34,9 @@ export default function FinancesPage() {
       const res = await fetch('/api/finances');
       if (res.ok) {
         const data = await res.json();
-        setTransactions(data.transactions || []);
-        setFilteredTransactions(data.transactions || []);
+        const txs = data.transactions || data || [];
+        setTransactions(txs);
+        setFilteredTransactions(txs);
       }
     } catch (error) {
       console.error('Failed to fetch finances:', error);
@@ -39,7 +53,8 @@ export default function FinancesPage() {
       const term = searchTerm.toLowerCase();
       result = result.filter(tx => 
         (tx.member?.fullName?.toLowerCase().includes(term)) ||
-        (tx.member?.membershipNumber?.toLowerCase().includes(term))
+        (tx.member?.membershipNumber?.toLowerCase().includes(term)) ||
+        (tx.description?.toLowerCase().includes(term))
       );
     }
 
@@ -50,7 +65,7 @@ export default function FinancesPage() {
     setFilteredTransactions(result);
   }, [transactions, searchTerm, typeFilter]);
 
-  const totalAmount = filteredTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+  const totalAmount = filteredTransactions.reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -197,7 +212,7 @@ export default function FinancesPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredTransactions.map((tx: any) => (
+              {filteredTransactions.map((tx: Transaction) => (
                 <tr key={tx.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
                   <td style={{ padding: '1rem' }}>{formatDate(tx.date)}</td>
                   <td style={{ padding: '1rem', fontWeight: '500' }}>

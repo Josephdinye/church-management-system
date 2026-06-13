@@ -6,6 +6,9 @@ export async function GET() {
   try {
     const events = await prisma.event.findMany({
       orderBy: { date: 'asc' },
+      include: {
+        _count: { select: { attendances: true } }
+      }
     });
     return NextResponse.json(events);
   } catch (error) {
@@ -18,6 +21,15 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
+    // Get default church
+    const church = await prisma.church.findFirst({
+      where: { slug: 'main-church' }
+    });
+
+    if (!church) {
+      return NextResponse.json({ error: 'Church not configured' }, { status: 400 });
+    }
+
     const event = await prisma.event.create({
       data: {
         title: data.title,
@@ -27,6 +39,7 @@ export async function POST(request: NextRequest) {
         type: data.type || 'Worship',
         description: data.description,
         expectedAttendance: data.expectedAttendees ? parseInt(data.expectedAttendees) : 0,
+        churchId: church.id,           // ← Fixed
       },
     });
 

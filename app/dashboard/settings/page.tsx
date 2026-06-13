@@ -5,9 +5,17 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
+type ExtendedSessionUser = {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role?: string;
+};
+
 export default function SettingsPage() {
   const { data: session } = useSession();
-  const isAdmin = session?.user?.role === 'ADMIN';
+  const user = session?.user as ExtendedSessionUser | undefined;
+  const isAdmin = user?.role === 'ADMIN';
   
   const [activeTab, setActiveTab] = useState('church');
 
@@ -80,7 +88,6 @@ export default function SettingsPage() {
       {activeTab === 'church' && (
         <div style={{ backgroundColor: 'white', padding: '2.5rem', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
           <h2 style={{ marginBottom: '2rem' }}>Church Information</h2>
-          {/* You can expand this form later */}
           <p style={{ color: '#6b7280' }}>Church profile settings coming soon...</p>
         </div>
       )}

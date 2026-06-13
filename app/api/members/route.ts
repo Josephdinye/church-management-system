@@ -34,6 +34,15 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
+    // Get default church
+    const church = await prisma.church.findFirst({
+      where: { slug: 'main-church' }
+    });
+
+    if (!church) {
+      return NextResponse.json({ error: 'Church not configured' }, { status: 400 });
+    }
+
     // Generate Custom Membership Number (WLC000001, WLC000002, ...)
     const lastMember = await prisma.member.findFirst({
       orderBy: { createdAt: 'desc' },
@@ -60,7 +69,8 @@ export async function POST(request: NextRequest) {
         city: data.city,
         country: data.country || 'Ghana',
         status: data.status || 'Active',
-        photo: data.photo || null,           // ← Support for photo URL
+        photo: data.photo || null,
+        churchId: church.id,           // ← This was missing
       },
     });
 

@@ -3,9 +3,20 @@
 import { useState, useEffect } from 'react';
 import { churchConfig } from '@/lib/config';
 
+type Transaction = {
+  id: string;
+  type: string;
+  amount: number;
+  date: string;
+  description?: string;
+  member?: {
+    fullName: string;
+  };
+};
+
 export default function ChurchFinancialReport() {
-  const [transactions, setTransactions] = useState([]);
-  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
@@ -15,8 +26,9 @@ export default function ChurchFinancialReport() {
     fetch('/api/finances')
       .then(res => res.json())
       .then(data => {
-        setTransactions(data.transactions || []);
-        setFilteredTransactions(data.transactions || []);
+        const txs = data.transactions || data || [];
+        setTransactions(txs);
+        setFilteredTransactions(txs);
       })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
@@ -39,7 +51,7 @@ export default function ChurchFinancialReport() {
     setFilteredTransactions(result);
   }, [transactions, fromDate, toDate, typeFilter]);
 
-  const totalAmount = filteredTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+  const totalAmount = filteredTransactions.reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
   const handlePrint = () => window.print();
 
@@ -63,7 +75,6 @@ export default function ChurchFinancialReport() {
       }}>
         {/* Letterhead */}
         <div style={{ textAlign: 'center', marginBottom: '50px', borderBottom: '5px solid #1e3a8a', paddingBottom: '35px' }}>
-          <img src={churchConfig.logo} alt="Logo" style={{ height: '90px', marginBottom: '15px' }} />
           <h1 style={{ fontSize: '38px', margin: '0', color: '#1e3a8a' }}>
             {churchConfig.name}
           </h1>
@@ -105,10 +116,8 @@ export default function ChurchFinancialReport() {
             <label>Record Type</label><br />
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ padding: '8px 12px' }}>
               <option value="All">All Records</option>
-              <option value="Tithe">Tithe Only</option>
-              <option value="Welfare">Welfare Only</option>
-              <option value="Offering">Offering Only</option>
-              <option value="Donation">Donation Only</option>
+              <option value="Income">Income Only</option>
+              <option value="Expense">Expense Only</option>
             </select>
           </div>
 
@@ -134,12 +143,12 @@ export default function ChurchFinancialReport() {
             <tr style={{ borderBottom: '3px solid #1e3a8a' }}>
               <th style={{ padding: '16px', textAlign: 'left' }}>Date</th>
               <th style={{ padding: '16px', textAlign: 'left' }}>Type</th>
-              <th style={{ padding: '16px', textAlign: 'left' }}>Member / Description</th>
+              <th style={{ padding: '16px', textAlign: 'left' }}>Description</th>
               <th style={{ padding: '16px', textAlign: 'right' }}>Amount (₵)</th>
             </tr>
           </thead>
           <tbody>
-            {filteredTransactions.map((tx: any) => (
+            {filteredTransactions.map((tx: Transaction) => (
               <tr key={tx.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                 <td style={{ padding: '16px' }}>{new Date(tx.date).toLocaleDateString()}</td>
                 <td style={{ padding: '16px' }}>{tx.type}</td>

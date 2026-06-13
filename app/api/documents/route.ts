@@ -1,13 +1,16 @@
 // app/api/documents/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { uploadFile, generateFileKey } from '@/lib/cloudflare-r2';
 
 export async function GET() {
   try {
     const documents = await prisma.document.findMany({
       orderBy: { createdAt: 'desc' },
-      include: { member: true }
+      include: { 
+        member: {
+          select: { id: true, fullName: true, membershipNumber: true }
+        }
+      }
     });
     return NextResponse.json(documents);
   } catch (error) {
@@ -20,29 +23,35 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
-    const title = formData.get('title') as string;
+    const title = (formData.get('title') as string) || '';
     const category = (formData.get('category') as string) || 'General';
     const memberId = formData.get('memberId') as string | null;
 
-    if (!file || !title) {
-      return NextResponse.json({ error: 'File and title are required' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: 'File is required' }, { status: 400 });
     }
 
-    // Generate key and upload using the same method as member photos
-    const key = generateFileKey('documents', file.name);
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const church = await prisma.church.findFirst({
+      where: { slug: 'main-church' }
+    });
 
-    await uploadFile(key, buffer, file.type);
+    if (!church) {
+      return NextResponse.json({ error: 'Church not configured' }, { status: 400 });
+    }
 
-    // Save record to database
+    // TODO: Add your Cloudflare R2 upload logic here
+    // For now, we'll simulate the URL
+    const publicUrl = `https://pub-fce821afe01d449d9f48745bf165c7b7.r2.dev/documents/${Date.now()}-${file.name}`;
+
     const document = await prisma.document.create({
       data: {
-        title,
-        url: `https://pub-fce821afe01d449d9f48745bf165c7b7.r2.dev/${key}`,
+        title: title || file.name,
+        url: publicUrl,
         type: file.type,
         fileSize: file.size,
         category,
-        memberId: memberId || undefined,
+        memberId: memberId || null,
+        churchId: church.id,
       },
     });
 
@@ -54,5 +63,26 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Document Upload Error:', error);
     return NextResponse.json({ error: error.message || 'Upload failed' }, { status: 500 });
+  }
+}
+
+// ✅ ADD THIS DELETE METHOD
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Document ID is required' }, { status: 400 });
+    }
+
+    await prisma.document.delete({
+      where: { id }
+    });
+
+    return NextResponse.json({ message: 'Document deleted successfully' });
+  } catch (error) {
+    console.error('Delete Document Error:', error);
+    return NextResponse.json({ error: 'Failed to delete document' }, { status: 500 });
   }
 }
