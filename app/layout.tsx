@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ChurchHub | Church Management System",
-  description: "Efficiently manage your church members, events, attendance, and documents.",
+  title: "The World Ligh Chapel",
+  description: "Walking in the Light and Truth",
   icons: {
     icon: "/favicon.ico",
   },
