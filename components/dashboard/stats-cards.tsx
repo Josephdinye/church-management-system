@@ -80,14 +80,17 @@ export default function StatsCards() {
 
         const upcomingEvents = events.filter((e: any) => new Date(e.date) >= new Date());
 
-        // Finances
+        // Finances (if you have this API)
         const financesRes = await fetch('/api/finances');
         const finances = financesRes.ok ? await financesRes.json() : { totalOfferings: 0 };
+
+        // TODO: Later - Calculate real attendance rate from attendance records
+        const calculatedAttendanceRate = "0%";   // Default to 0% when no data
 
         setStats({
           totalMembers: members.length,
           activeEvents: upcomingEvents.length,
-          attendanceRate: "87%",                    // TODO: Calculate real percentage later
+          attendanceRate: calculatedAttendanceRate,
           totalOfferings: `₵${(finances.totalOfferings || 0).toLocaleString()}`,
         });
       } catch (error) {
