@@ -1,4 +1,6 @@
 // components/Navbar.tsx
+'use client';   // ← This line is required
+
 import Link from 'next/link';
 import { churchConfig } from '@/lib/config';
 
@@ -19,7 +21,7 @@ export default function Navbar() {
       boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
       borderBottom: '1px solid #e5e7eb'
     }}>
-      {/* Logo + Name - Clickable to Home */}
+      {/* Logo + Name */}
       <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
         <img src={churchConfig.logo} alt="Logo" style={{ height: '52px' }} />
         <div>
@@ -40,16 +42,24 @@ export default function Navbar() {
         <Link href="/contact" style={{ color: '#334155', textDecoration: 'none' }}>Contact</Link>
       </div>
 
-      {/* Only Admin Login (Register removed) */}
-      <Link href="/login" style={{
-        padding: '13px 32px',
-        backgroundColor: '#1e3a8a',
-        color: 'white',
-        borderRadius: '9999px',
-        textDecoration: 'none',
-        fontWeight: '600',
-        fontSize: '15.5px'
-      }}>
+      {/* Admin Login - Opens in New Tab */}
+      <Link 
+        href="/login" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        style={{
+          padding: '13px 32px',
+          backgroundColor: '#1e3a8a',
+          color: 'white',
+          borderRadius: '9999px',
+          textDecoration: 'none',
+          fontWeight: '600',
+          fontSize: '15.5px',
+          transition: 'all 0.2s ease'
+        }}
+        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1e40af'}
+        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#1e3a8a'}
+      >
         Admin Login
       </Link>
     </nav>
