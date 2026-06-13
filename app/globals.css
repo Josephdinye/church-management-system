@@ -1,8 +1,14 @@
 /* app/globals.css */
+
+/* ==================== RESET & BASE STYLES ==================== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;   /* ← add this */
 }
 
 body {
@@ -10,65 +16,59 @@ body {
   background-color: #f9fafb;
   color: #111827;
   line-height: 1.6;
+  overflow-x: hidden;   /* ← add this */
 }
 
-/* ==================== RESPONSIVE NAV ==================== */
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(12px);
-  z-index: 1000;
-  padding: 1rem 5%;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  border-bottom: 1px solid #e5e7eb;
-}
-
+/* ==================== RESPONSIVE NAVBAR ==================== */
 .desktop-nav {
   display: none;
-  gap: 28px;
-  font-size: 15.5px;
+  gap: clamp(12px, 2vw, 24px);
+  font-size: clamp(13.5px, 1.8vw, 15.5px);
   font-weight: 500;
   align-items: center;
 }
 
+.desktop-admin {
+  display: none;
+}
+
 .mobile-hamburger {
   display: block;
-  font-size: 28px;
+  font-size: 30px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 5px;
 }
 
-/* Mobile Menu */
 .mobile-menu {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
   background-color: white;
-  padding: 20px;
+  padding: 25px 5%;
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  font-size: 17px;
+  gap: 18px;
+  font-size: clamp(16px, 4.2vw, 18px);
+  border-top: 1px solid #e5e7eb;
 }
 
-/* Desktop View */
-@media (min-width: 768px) {
+@media (min-width: 460px) {
   .desktop-nav {
-    display: flex;
+    display: flex !important;
+  }
+  .desktop-admin {
+    display: inline-block !important;
   }
   .mobile-hamburger {
-    display: none;
+    display: none !important;
   }
 }
 
-/* ==================== GENERAL STYLES ==================== */
+/* ==================== UTILITY CLASSES ==================== */
 .flex { display: flex; }
 .items-center { align-items: center; }
 .justify-center { justify-content: center; }
@@ -80,7 +80,7 @@ nav {
 .p-6 { padding: 1.5rem; }
 .text-center { text-align: center; }
 
-/* Buttons */
+/* ==================== BUTTONS ==================== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -102,7 +102,7 @@ nav {
   background-color: #4338ca;
 }
 
-/* Cards */
+/* ==================== CARDS & FORMS ==================== */
 .card {
   background-color: white;
   border-radius: 0.75rem;
@@ -110,7 +110,6 @@ nav {
   border: 1px solid #e5e7eb;
 }
 
-/* Inputs */
 .input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -125,7 +124,20 @@ nav {
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
-/* Responsive Text Scaling */
-h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
-h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
-p  { font-size: clamp(1rem, 2.5vw, 1.1rem); }
+/* ==================== RESPONSIVE TYPOGRAPHY ==================== */
+/* ↓ Scoped to main content only — excludes navbar h1 */
+main h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
+main h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+main h3 { font-size: clamp(1.25rem, 3.5vw, 2rem); }
+main p  { font-size: clamp(1rem, 2.5vw, 1.1rem); }
+
+/* ==================== MISC ==================== */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
