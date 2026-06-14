@@ -150,11 +150,14 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          position: 'sticky',
+          position: 'fixed',                              // ← changed from 'sticky'
           top: 0,
+          right: 0,
+          left: isMobile ? '0' : sidebarWidth,           // ← added
           zIndex: 40,
           height: '70px',
           gap: '12px',
+          transition: 'left 0.3s',                       // ← added
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
             <button
@@ -200,7 +203,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Page Content */}
-        <main style={{ padding: 'clamp(1rem, 3vw, 2rem)', overflowY: 'auto' }}>
+        <main style={{ padding: 'clamp(1rem, 3vw, 2rem)', paddingTop: 'calc(70px + clamp(1rem, 3vw, 2rem))', overflowY: 'auto' }}>
           {children}
         </main>
       </div>
