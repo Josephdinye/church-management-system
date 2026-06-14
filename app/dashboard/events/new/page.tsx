@@ -78,182 +78,198 @@ export default function NewEventPage() {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
-          Create New Event
-        </h1>
-        <p style={{ color: '#6b7280', fontSize: '17px' }}>
-          Add a new church service, meeting, or special program.
-        </p>
-      </div>
+    <>
+      <style>{`
+        @media (max-width: 640px) {
+          .new-event-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .new-event-grid > div[style*="span 2"] {
+            grid-column: span 1 !important;
+          }
+          .new-event-box {
+            padding: 1.5rem !important;
+          }
+        }
+      `}</style>
 
-      {error && (
-        <div style={{
-          backgroundColor: '#fee2e2',
-          color: '#ef4444',
-          padding: '16px 20px',
-          borderRadius: '10px',
-          marginBottom: '2rem',
-          border: '1px solid #fecaca'
-        }}>
-          ⚠️ {error}
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ marginBottom: '2.5rem' }}>
+          <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
+            Create New Event
+          </h1>
+          <p style={{ color: '#6b7280', fontSize: '17px' }}>
+            Add a new church service, meeting, or special program.
+          </p>
         </div>
-      )}
 
-      <form onSubmit={handleSubmit}>
-        <div style={{
-          backgroundColor: 'white',
-          padding: '2.5rem',
-          borderRadius: '12px',
-          border: '1px solid #e5e7eb',
-          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'
-        }}>
-          {/* Image Upload - Optional */}
-          <div style={{ marginBottom: '2rem' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-              Event Image (Optional)
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ marginBottom: '12px' }}
-            />
-            {previewUrl && (
-              <div style={{ marginTop: '10px' }}>
-                <img 
-                  src={previewUrl} 
-                  alt="Preview" 
-                  style={{ maxHeight: '220px', borderRadius: '8px', border: '1px solid #ddd' }} 
+        {error && (
+          <div style={{
+            backgroundColor: '#fee2e2',
+            color: '#ef4444',
+            padding: '16px 20px',
+            borderRadius: '10px',
+            marginBottom: '2rem',
+            border: '1px solid #fecaca'
+          }}>
+            ⚠️ {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="new-event-box" style={{
+            backgroundColor: 'white',
+            padding: '2.5rem',
+            borderRadius: '12px',
+            border: '1px solid #e5e7eb',
+            boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'
+          }}>
+            {/* Image Upload - Optional */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                Event Image (Optional)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ marginBottom: '12px' }}
+              />
+              {previewUrl && (
+                <div style={{ marginTop: '10px' }}>
+                  <img 
+                    src={previewUrl} 
+                    alt="Preview" 
+                    style={{ maxHeight: '220px', borderRadius: '8px', border: '1px solid #ddd' }} 
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="new-event-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div style={{ gridColumn: 'span 2' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                  Event Title <span style={{ color: 'red' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
+                  style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
                 />
               </div>
-            )}
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                  Date <span style={{ color: 'red' }}>*</span>
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  required
+                  style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                  Time <span style={{ color: 'red' }}>*</span>
+                </label>
+                <input
+                  type="time"
+                  name="time"
+                  value={formData.time}
+                  onChange={handleChange}
+                  required
+                  style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                  Location <span style={{ color: 'red' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  required
+                  style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                  Event Type
+                </label>
+                <select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+                >
+                  <option value="Worship">Worship Service</option>
+                  <option value="Bible Study">Bible Study</option>
+                  <option value="Prayer">Prayer Meeting</option>
+                  <option value="Special">Special Event</option>
+                  <option value="Youth">Youth Program</option>
+                  <option value="Outreach">Outreach</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                  Expected Attendees
+                </label>
+                <input
+                  type="number"
+                  name="expectedAttendees"
+                  value={formData.expectedAttendees}
+                  onChange={handleChange}
+                  style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ marginTop: '1.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows={5}
+                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db', resize: 'vertical' }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                marginTop: '2.5rem',
+                width: '100%',
+                padding: '16px',
+                backgroundColor: '#4f46e5',
+                color: 'white',
+                border: 'none',
+                borderRadius: '9999px',
+                fontSize: '17px',
+                fontWeight: '600',
+                cursor: isLoading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {isLoading ? 'Creating Event...' : 'Create Event'}
+            </button>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            <div style={{ gridColumn: 'span 2' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
-                Event Title <span style={{ color: 'red' }}>*</span>
-              </label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
-                Date <span style={{ color: 'red' }}>*</span>
-              </label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                required
-                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
-                Time <span style={{ color: 'red' }}>*</span>
-              </label>
-              <input
-                type="time"
-                name="time"
-                value={formData.time}
-                onChange={handleChange}
-                required
-                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
-                Location <span style={{ color: 'red' }}>*</span>
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                required
-                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
-                Event Type
-              </label>
-              <select
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
-              >
-                <option value="Worship">Worship Service</option>
-                <option value="Bible Study">Bible Study</option>
-                <option value="Prayer">Prayer Meeting</option>
-                <option value="Special">Special Event</option>
-                <option value="Youth">Youth Program</option>
-                <option value="Outreach">Outreach</option>
-              </select>
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
-                Expected Attendees
-              </label>
-              <input
-                type="number"
-                name="expectedAttendees"
-                value={formData.expectedAttendees}
-                onChange={handleChange}
-                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db' }}
-              />
-            </div>
-          </div>
-
-          <div style={{ marginTop: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={5}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db', resize: 'vertical' }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            style={{
-              marginTop: '2.5rem',
-              width: '100%',
-              padding: '16px',
-              backgroundColor: '#4f46e5',
-              color: 'white',
-              border: 'none',
-              borderRadius: '9999px',
-              fontSize: '17px',
-              fontWeight: '600',
-              cursor: isLoading ? 'not-allowed' : 'pointer'
-            }}
-          >
-            {isLoading ? 'Creating Event...' : 'Create Event'}
-          </button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 }

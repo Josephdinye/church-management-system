@@ -41,17 +41,22 @@ export default function EventForm({
     <form onSubmit={handleSubmit}>
       <div style={{
         backgroundColor: 'white',
-        padding: '2.5rem',
+        padding: 'clamp(1.5rem, 5vw, 2.5rem)',
         borderRadius: '12px',
         border: '1px solid #e5e7eb',
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
         maxWidth: '750px'
       }}>
-        <h2 style={{ fontSize: '26px', fontWeight: '700', marginBottom: '2rem', textAlign: 'center' }}>
+        <h2 style={{ 
+          fontSize: 'clamp(22px, 5.5vw, 26px)', 
+          fontWeight: '700', 
+          marginBottom: '2rem', 
+          textAlign: 'center' 
+        }}>
           {isEdit ? 'Edit Event' : 'Create New Event'}
         </h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }} className="event-form-grid">
           <div style={{ gridColumn: 'span 2' }}>
             <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
               Event Title <span style={{ color: 'red' }}>*</span>
@@ -216,6 +221,15 @@ export default function EventForm({
           {isLoading ? 'Saving Event...' : isEdit ? 'Update Event' : 'Create Event'}
         </button>
       </div>
+
+      {/* Mobile Responsive Styles */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .event-form-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </form>
   );
 }

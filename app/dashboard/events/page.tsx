@@ -39,9 +39,9 @@ export default function EventsPage() {
   return (
     <div>
       {/* Page Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
+          <h1 style={{ fontSize: 'clamp(24px, 6vw, 32px)', fontWeight: '700', marginBottom: '8px' }}>
             Church Events
           </h1>
           <p style={{ color: '#6b7280' }}>Manage all services, meetings, and special programs</p>
@@ -54,7 +54,8 @@ export default function EventsPage() {
           borderRadius: '9999px',
           textDecoration: 'none',
           fontWeight: '600',
-          boxShadow: '0 4px 6px -1px rgba(79, 70, 229, 0.3)'
+          boxShadow: '0 4px 6px -1px rgba(79, 70, 229, 0.3)',
+          whiteSpace: 'nowrap'
         }}>
           + Create New Event
         </Link>
@@ -102,6 +103,20 @@ export default function EventsPage() {
           No events found for the selected filter.
         </div>
       )}
+
+      {/* Mobile Responsive Adjustments */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          div[style*="justify-content: space-between"] {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          
+          button[style*="borderRadius: 9999px"] {
+            flex: 1 1 auto;
+          }
+        }
+      `}</style>
     </div>
   );
 }
