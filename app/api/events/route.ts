@@ -1,6 +1,19 @@
 // app/api/events/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
+
+const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'events');
+
+// Ensure upload directory exists
+async function ensureUploadDir() {
+  try {
+    await mkdir(UPLOAD_DIR, { recursive: true });
+  } catch (e) {
+    // Directory already exists
+  }
+}
 
 export async function GET() {
   try {
@@ -19,7 +32,17 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json();
+    await ensureUploadDir();
+    const formData = await request.formData();
+
+    const title = formData.get('title') as string;
+    const date = formData.get('date') as string;
+    const time = formData.get('time') as string;
+    const location = formData.get('location') as string;
+    const type = formData.get('type') as string || 'Worship';
+    const description = formData.get('description') as string;
+    const expectedAttendees = formData.get('expectedAttendees') as string;
+    const imageFile = formData.get('image') as File | null;
 
     // Get default church
     const church = await prisma.church.findFirst({
@@ -30,16 +53,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Church not configured' }, { status: 400 });
     }
 
+    let imageUrl = '';
+
+    // Handle image upload if provided
+    if (imageFile && imageFile.size > 0) {
+      const bytes = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      
+      const filename = `${Date.now()}-${imageFile.name.replace(/\s+/g, '-')}`;
+      const filepath = path.join(UPLOAD_DIR, filename);
+      
+      await writeFile(filepath, buffer);
+      imageUrl = `/uploads/events/${filename}`;
+    }
+
     const event = await prisma.event.create({
       data: {
-        title: data.title,
-        date: new Date(data.date),
-        time: data.time,
-        location: data.location,
-        type: data.type || 'Worship',
-        description: data.description,
-        expectedAttendance: data.expectedAttendees ? parseInt(data.expectedAttendees) : 0,
-        churchId: church.id,           // ← Fixed
+        title,
+        date: new Date(date),
+        time,
+        location,
+        type,
+        description,
+        expectedAttendance: expectedAttendees ? parseInt(expectedAttendees) : 0,
+        image: imageUrl || null,        // ← Added image field
+        churchId: church.id,
       },
     });
 

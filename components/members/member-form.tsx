@@ -32,6 +32,7 @@ export default function MemberForm({
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState(initialData.photo || '');
   const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -43,6 +44,7 @@ export default function MemberForm({
     if (file) {
       setPhoto(file);
       setPhotoPreview(URL.createObjectURL(file));
+      setMessage(null); // Clear previous message
     }
   };
 
@@ -50,6 +52,7 @@ export default function MemberForm({
     e.preventDefault();
     
     setUploading(true);
+    setMessage(null);
     let photoUrl = initialData.photo || '';
 
     // Upload new photo if selected
@@ -73,7 +76,7 @@ export default function MemberForm({
         }
       } catch (error) {
         console.error(error);
-        alert("❌ Failed to upload photo. Please try again.");
+        setMessage({ type: 'error', text: "❌ Failed to upload photo. Please try again." });
         setUploading(false);
         return;
       }
@@ -92,14 +95,34 @@ export default function MemberForm({
     <form onSubmit={handleSubmit}>
       <div style={{
         backgroundColor: 'white',
-        padding: '2.5rem',
+        padding: 'clamp(1.5rem, 5vw, 2.5rem)',
         borderRadius: '12px',
         border: '1px solid #e5e7eb',
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
       }}>
-        <h2 style={{ fontSize: '26px', fontWeight: '700', marginBottom: '2rem', textAlign: 'center' }}>
+        <h2 style={{ 
+          fontSize: 'clamp(22px, 5vw, 26px)', 
+          fontWeight: '700', 
+          marginBottom: '2rem', 
+          textAlign: 'center' 
+        }}>
           {isEdit ? 'Edit Member Information' : 'Register New Member'}
         </h2>
+
+        {/* Message Display */}
+        {message && (
+          <div style={{
+            padding: '14px 20px',
+            marginBottom: '1.5rem',
+            borderRadius: '8px',
+            backgroundColor: message.type === 'error' ? '#fee2e2' : '#d1fae5',
+            color: message.type === 'error' ? '#ef4444' : '#10b981',
+            border: `1px solid ${message.type === 'error' ? '#fecaca' : '#a7f3d0'}`,
+            fontWeight: '500'
+          }}>
+            {message.text}
+          </div>
+        )}
 
         {/* Photo Upload */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
@@ -107,8 +130,8 @@ export default function MemberForm({
             Member Photo <span style={{ color: 'red' }}>*</span>
           </label>
           <div style={{ 
-            width: '160px', 
-            height: '160px', 
+            width: 'clamp(140px, 35vw, 160px)', 
+            height: 'clamp(140px, 35vw, 160px)', 
             borderRadius: '50%', 
             border: '4px solid #e5e7eb',
             margin: '0 auto 15px',
@@ -118,7 +141,7 @@ export default function MemberForm({
             {photoPreview ? (
               <img src={photoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <div style={{ fontSize: '55px', paddingTop: '45px', color: '#cbd5e1' }}>👤</div>
+              <div style={{ fontSize: 'clamp(50px, 12vw, 55px)', paddingTop: 'clamp(35px, 8vw, 45px)', color: '#cbd5e1' }}>👤</div>
             )}
           </div>
           <input
@@ -128,13 +151,17 @@ export default function MemberForm({
             required={!isEdit && !initialData.photo}
             style={{ margin: '0 auto', display: 'block' }}
           />
-          <p style={{ fontSize: '13px', color: '#666', marginTop: '8px' }}>
+          <p style={{ fontSize: 'clamp(12px, 3vw, 13px)', color: '#666', marginTop: '8px' }}>
             Recommended: Square photo (JPG or PNG, max 5MB)
           </p>
         </div>
 
         {/* Form Fields */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: '1fr', 
+          gap: '1.5rem' 
+        }} className="member-form-grid">
           <div>
             <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>Full Name <span style={{color:'red'}}>*</span></label>
             <input name="fullName" value={formData.fullName} onChange={handleChange} required style={{width:'100%', padding:'12px', borderRadius:'8px', border:'1px solid #d1d5db'}} />
@@ -173,7 +200,7 @@ export default function MemberForm({
             </select>
           </div>
 
-          <div style={{ gridColumn: 'span 2' }}>
+          <div>
             <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>Address</label>
             <input name="address" value={formData.address} onChange={handleChange} style={{width:'100%', padding:'12px', borderRadius:'8px', border:'1px solid #d1d5db'}} />
           </div>
@@ -209,6 +236,15 @@ export default function MemberForm({
           {uploading ? 'Uploading Photo...' : isLoading ? 'Saving...' : isEdit ? 'Update Member' : 'Register Member'}
         </button>
       </div>
+
+      {/* Mobile Responsive Styles */}
+      <style jsx>{`
+        @media (min-width: 768px) {
+          .member-form-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+        }
+      `}</style>
     </form>
   );
 }

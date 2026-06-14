@@ -20,20 +20,21 @@ const StatCard = ({ title, value, change, changeType = 'positive', icon, link }:
     <Link href={link} style={{ textDecoration: 'none' }}>
       <div style={{
         backgroundColor: 'white',
-        padding: '1.75rem',
+        padding: 'clamp(1.25rem, 4vw, 1.75rem)',
         borderRadius: '12px',
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
         border: '1px solid #e5e7eb',
         transition: 'all 0.2s',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        height: '100%'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '8px' }}>
+            <p style={{ color: '#6b7280', fontSize: 'clamp(14px, 3vw, 15px)', marginBottom: '8px' }}>
               {title}
             </p>
             <p style={{ 
-              fontSize: '42px', 
+              fontSize: 'clamp(32px, 7vw, 42px)', 
               fontWeight: '700',
               marginBottom: '4px',
               color: '#111827'
@@ -41,13 +42,13 @@ const StatCard = ({ title, value, change, changeType = 'positive', icon, link }:
               {value}
             </p>
           </div>
-          <div style={{ fontSize: '36px', opacity: 0.85 }}>
+          <div style={{ fontSize: 'clamp(28px, 6vw, 36px)', opacity: 0.85 }}>
             {icon}
           </div>
         </div>
 
         <p style={{ 
-          fontSize: '14.5px',
+          fontSize: 'clamp(13px, 3vw, 14.5px)',
           color: isPositive ? '#10b981' : '#ef4444',
           fontWeight: '500'
         }}>
@@ -80,12 +81,11 @@ export default function StatsCards() {
 
         const upcomingEvents = events.filter((e: any) => new Date(e.date) >= new Date());
 
-        // Finances (if you have this API)
+        // Finances
         const financesRes = await fetch('/api/finances');
         const finances = financesRes.ok ? await financesRes.json() : { totalOfferings: 0 };
 
-        // TODO: Later - Calculate real attendance rate from attendance records
-        const calculatedAttendanceRate = "0%";   // Default to 0% when no data
+        const calculatedAttendanceRate = "0%";
 
         setStats({
           totalMembers: members.length,
@@ -113,7 +113,7 @@ export default function StatsCards() {
       gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
       gap: '1.5rem',
       marginBottom: '2.5rem'
-    }}>
+    }} className="stats-grid">
       <StatCard 
         title="Total Members" 
         value={stats.totalMembers} 

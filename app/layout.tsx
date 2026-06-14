@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The World Ligh Chapel",
+  title: "The World Light Chapel",
   description: "Walking in the Light and Truth",
   icons: {
     icon: "/favicon.ico",

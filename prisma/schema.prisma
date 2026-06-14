@@ -20,12 +20,12 @@ model Church {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  users       User[]
-  members     Member[]
-  events      Event[]
+  users        User[]
+  members      Member[]
+  events       Event[]
   transactions Transaction[]
-  attendances Attendance[]
-  documents   Document[]
+  attendances  Attendance[]
+  documents    Document[]
 
   @@map("churches")
 }
@@ -38,9 +38,7 @@ model User {
   password  String
   role      String   @default("MEMBER")
   churchId  String
-
   church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -48,29 +46,28 @@ model User {
 }
 
 model Member {
-  id               String   @id @default(cuid())
-  membershipNumber String   @unique
-  fullName         String
-  email            String?  @unique
-  phone            String?
-  dateOfBirth      DateTime?
-  gender           String?
-  address          String?
-  city             String?
-  country          String?  @default("Ghana")
-  photo            String?
-  joinDate         DateTime @default(now())
-  status           String   @default("Active")
-  churchId         String
+  id                String   @id @default(cuid())
+  membershipNumber  String   @unique
+  fullName          String
+  email             String?  @unique
+  phone             String?
+  dateOfBirth       DateTime?
+  gender            String?
+  address           String?
+  city              String?
+  country           String?  @default("Ghana")
+  photo             String?
+  joinDate          DateTime @default(now())
+  status            String   @default("Active")
+  churchId          String
+  church            Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
 
-  church           Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  attendances  Attendance[]
+  documents    Document[]
 
-  transactions     Transaction[]
-  attendances      Attendance[]
-  documents        Document[]
-
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("members")
 }
@@ -83,33 +80,31 @@ model Event {
   location           String
   type               String   @default("Worship")
   description        String?
+  image              String?           // ← For event image
   expectedAttendance Int?     @default(0)
   churchId           String
-
   church             Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  attendances        Attendance[]
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  attendances Attendance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("events")
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   type        String
-  amount      Decimal
-  date        DateTime @default(now())
+  amount      Decimal   @db.Decimal(12, 2)   // Best for money
+  date        DateTime  @default(now())
   description String?
   memberId    String?
-  recordedBy  String   @default("Admin")
+  recordedBy  String    @default("Admin")
   churchId    String
-
-  church      Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  member      Member?  @relation(fields: [memberId], references: [id], onDelete: SetNull)
-
-  createdAt   DateTime @default(now())
-
+  church      Church    @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  member      Member?   @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
   @@map("transactions")
 }
 
@@ -121,7 +116,6 @@ model Attendance {
   status    String
   notes     String?
   churchId  String
-
   church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
   member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
   event     Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
@@ -143,12 +137,11 @@ model Document {
   memberId    String?
   uploadedBy  String?  @default("Admin")
   churchId    String
-
   church      Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
   member      Member?  @relation(fields: [memberId], references: [id], onDelete: SetNull)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("documents")
 }

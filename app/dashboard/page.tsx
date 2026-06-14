@@ -1,4 +1,4 @@
-//(dashboard)/app/page.tsx
+// app/(dashboard)/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -51,10 +51,10 @@ export default function DashboardPage() {
     <div>
       {/* Header */}
       <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
+        <h1 style={{ fontSize: 'clamp(24px, 5vw, 32px)', fontWeight: '700', marginBottom: '8px' }}>
           Welcome to {churchConfig.shortName}
         </h1>
-        <p style={{ color: '#6b7280', fontSize: '18px' }}>
+        <p style={{ color: '#6b7280', fontSize: 'clamp(16px, 3.5vw, 18px)' }}>
           Here's what's happening in your church today.
         </p>
       </div>
@@ -62,17 +62,22 @@ export default function DashboardPage() {
       {/* Stats Cards */}
       <StatsCards />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', marginTop: '2.5rem' }}>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: '2fr 1fr', 
+        gap: '2rem', 
+        marginTop: '2.5rem' 
+      }} className="dashboard-grid">
 
         {/* Recent Members */}
         <div style={{
           backgroundColor: 'white',
           borderRadius: '12px',
           border: '1px solid #e5e7eb',
-          padding: '2rem'
+          padding: 'clamp(1.25rem, 4vw, 2rem)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: '600' }}>Recent Members</h2>
+            <h2 style={{ fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: '600' }}>Recent Members</h2>
             <Link href="/dashboard/members" style={{ color: '#4f46e5', textDecoration: 'none', fontWeight: '500' }}>
               View All →
             </Link>
@@ -127,10 +132,10 @@ export default function DashboardPage() {
           backgroundColor: 'white',
           borderRadius: '12px',
           border: '1px solid #e5e7eb',
-          padding: '2rem'
+          padding: 'clamp(1.25rem, 4vw, 2rem)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: '600' }}>Upcoming Events</h2>
+            <h2 style={{ fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: '600' }}>Upcoming Events</h2>
             <Link href="/dashboard/events" style={{ color: '#4f46e5', textDecoration: 'none', fontWeight: '500' }}>
               View All →
             </Link>
@@ -171,7 +176,11 @@ export default function DashboardPage() {
         <h2 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '1rem' }}>
           Quick Actions
         </h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: '1rem' 
+        }}>
           <Link href="/dashboard/members/new" style={{
             padding: '16px 32px',
             backgroundColor: '#4f46e5',
@@ -179,7 +188,8 @@ export default function DashboardPage() {
             borderRadius: '9999px',
             textDecoration: 'none',
             fontWeight: '600',
-            boxShadow: '0 4px 6px -1px rgba(79, 70, 229, 0.3)'
+            boxShadow: '0 4px 6px -1px rgba(79, 70, 229, 0.3)',
+            flex: '1 1 280px'
           }}>
             + Add New Member
           </Link>
@@ -191,7 +201,8 @@ export default function DashboardPage() {
             border: '2px solid #4f46e5',
             borderRadius: '9999px',
             textDecoration: 'none',
-            fontWeight: '600'
+            fontWeight: '600',
+            flex: '1 1 280px'
           }}>
             + Create New Event
           </Link>
@@ -203,12 +214,29 @@ export default function DashboardPage() {
             border: '2px solid #4f46e5',
             borderRadius: '9999px',
             textDecoration: 'none',
-            fontWeight: '600'
+            fontWeight: '600',
+            flex: '1 1 280px'
           }}>
             Mark Attendance
           </Link>
         </div>
       </div>
+
+      {/* Mobile Responsive Styles */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .dashboard-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .dashboard-grid {
+            gap: 1.25rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }

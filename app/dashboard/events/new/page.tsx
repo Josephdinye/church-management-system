@@ -8,6 +8,7 @@ export default function NewEventPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [previewUrl, setPreviewUrl] = useState<string>('');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -19,9 +20,19 @@ export default function NewEventPage() {
     expectedAttendees: '',
   });
 
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,18 +41,23 @@ export default function NewEventPage() {
     setError('');
 
     try {
+      const form = new FormData();
+      
+      form.append('title', formData.title);
+      form.append('date', formData.date);
+      form.append('time', formData.time);
+      form.append('location', formData.location);
+      form.append('type', formData.type);
+      form.append('description', formData.description);
+      form.append('expectedAttendees', formData.expectedAttendees);
+
+      if (selectedImage) {
+        form.append('image', selectedImage);
+      }
+
       const res = await fetch('/api/events', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formData.title,
-          date: formData.date,
-          time: formData.time,
-          location: formData.location,
-          type: formData.type,
-          description: formData.description,
-          expectedAttendees: formData.expectedAttendees,
-        }),
+        body: form,
       });
 
       const result = await res.json();
@@ -49,7 +65,7 @@ export default function NewEventPage() {
       if (res.ok) {
         alert(`✅ Event "${formData.title}" created successfully!`);
         router.push('/dashboard/events');
-        router.refresh(); // Refresh the events list
+        router.refresh();
       } else {
         setError(result.error || 'Failed to create event');
       }
@@ -93,6 +109,28 @@ export default function NewEventPage() {
           border: '1px solid #e5e7eb',
           boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'
         }}>
+          {/* Image Upload - Optional */}
+          <div style={{ marginBottom: '2rem' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+              Event Image (Optional)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ marginBottom: '12px' }}
+            />
+            {previewUrl && (
+              <div style={{ marginTop: '10px' }}>
+                <img 
+                  src={previewUrl} 
+                  alt="Preview" 
+                  style={{ maxHeight: '220px', borderRadius: '8px', border: '1px solid #ddd' }} 
+                />
+              </div>
+            )}
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
             <div style={{ gridColumn: 'span 2' }}>
               <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>
@@ -165,6 +203,7 @@ export default function NewEventPage() {
                 <option value="Prayer">Prayer Meeting</option>
                 <option value="Special">Special Event</option>
                 <option value="Youth">Youth Program</option>
+                <option value="Outreach">Outreach</option>
               </select>
             </div>
 

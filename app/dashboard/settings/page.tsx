@@ -36,14 +36,15 @@ export default function SettingsPage() {
         gap: '8px', 
         marginBottom: '2rem', 
         borderBottom: '1px solid #e5e7eb',
-        paddingBottom: '8px'
+        paddingBottom: '8px',
+        flexWrap: 'wrap'
       }}>
         <button
           onClick={() => setActiveTab('church')}
           style={{
             padding: '12px 24px',
             borderRadius: '8px',
-            backgroundColor: activeTab === 'church' ? '#4f46e5' : '#f3f4f6',
+            backgroundColor: activeTab === 'church' ? '#1e3a8a' : '#f3f4f6',
             color: activeTab === 'church' ? 'white' : '#374151',
             border: 'none',
             fontWeight: '600',
@@ -54,11 +55,26 @@ export default function SettingsPage() {
         </button>
 
         <button
+          onClick={() => setActiveTab('ministries')}
+          style={{
+            padding: '12px 24px',
+            borderRadius: '8px',
+            backgroundColor: activeTab === 'ministries' ? '#1e3a8a' : '#f3f4f6',
+            color: activeTab === 'ministries' ? 'white' : '#374151',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+        >
+          Ministries Management
+        </button>
+
+        <button
           onClick={() => setActiveTab('users')}
           style={{
             padding: '12px 24px',
             borderRadius: '8px',
-            backgroundColor: activeTab === 'users' ? '#4f46e5' : '#f3f4f6',
+            backgroundColor: activeTab === 'users' ? '#1e3a8a' : '#f3f4f6',
             color: activeTab === 'users' ? 'white' : '#374151',
             border: 'none',
             fontWeight: '600',
@@ -73,7 +89,7 @@ export default function SettingsPage() {
           style={{
             padding: '12px 24px',
             borderRadius: '8px',
-            backgroundColor: activeTab === 'preferences' ? '#4f46e5' : '#f3f4f6',
+            backgroundColor: activeTab === 'preferences' ? '#1e3a8a' : '#f3f4f6',
             color: activeTab === 'preferences' ? 'white' : '#374151',
             border: 'none',
             fontWeight: '600',
@@ -85,10 +101,36 @@ export default function SettingsPage() {
       </div>
 
       {/* Tab Content */}
+
       {activeTab === 'church' && (
         <div style={{ backgroundColor: 'white', padding: '2.5rem', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
           <h2 style={{ marginBottom: '2rem' }}>Church Information</h2>
           <p style={{ color: '#6b7280' }}>Church profile settings coming soon...</p>
+        </div>
+      )}
+
+      {/* Ministries Tab */}
+      {activeTab === 'ministries' && (
+        <div>
+          <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ margin: 0 }}>Ministries Management</h2>
+            <Link href="/dashboard/settings/ministries" style={{ textDecoration: 'none' }}>
+              <button style={{
+                padding: '12px 28px',
+                backgroundColor: '#1e3a8a',
+                color: 'white',
+                border: 'none',
+                borderRadius: '9999px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}>
+                Manage Ministries →
+              </button>
+            </Link>
+          </div>
+          <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
+            Add, edit, and organize ministries that appear on the public Ministries page.
+          </p>
         </div>
       )}
 

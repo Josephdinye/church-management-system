@@ -47,12 +47,19 @@ export default function MembersPage() {
   return (
     <div>
       {/* Page Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '2rem',
+        flexWrap: 'wrap',
+        gap: '1rem'
+      }}>
         <div>
-          <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
+          <h1 style={{ fontSize: 'clamp(24px, 6vw, 32px)', fontWeight: '700', marginBottom: '8px' }}>
             Church Members
           </h1>
-          <p style={{ color: '#6b7280' }}>
+          <p style={{ color: '#6b7280', fontSize: 'clamp(15px, 3.5vw, 16px)' }}>
             Total Members: <strong>{members.length}</strong> • 
             Showing: <strong>{filteredMembers.length}</strong>
           </p>
@@ -68,7 +75,8 @@ export default function MembersPage() {
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
-          boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)'
+          boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
+          whiteSpace: 'nowrap'
         }}>
           + Add New Member
         </Link>
@@ -96,7 +104,7 @@ export default function MembersPage() {
             padding: '12px 16px',
             border: '1px solid #d1d5db',
             borderRadius: '8px',
-            minWidth: '320px',
+            minWidth: '280px',
             fontSize: '15px'
           }}
         />
@@ -124,7 +132,8 @@ export default function MembersPage() {
             border: '1px solid #d1d5db',
             borderRadius: '8px',
             backgroundColor: 'white',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            whiteSpace: 'nowrap'
           }}
         >
           ↻ Refresh
@@ -153,6 +162,22 @@ export default function MembersPage() {
           <p style={{ marginTop: '8px' }}>Try adjusting your filters.</p>
         </div>
       )}
+
+      {/* Mobile Responsive Adjustments */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          div[style*="justify-content: space-between"] {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          input[style*="minWidth: 280px"] {
+            min-width: 100% !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

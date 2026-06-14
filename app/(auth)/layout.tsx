@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Auth - ChurchHub',
-  description: 'Sign in or create an account',
+  title: 'The World Light Chapel',
+  description: 'Church Management System',
 };
 
 export default function AuthLayout({
