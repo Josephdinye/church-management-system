@@ -45,7 +45,6 @@ export default function FinancesPage() {
     }
   };
 
-  // Filter logic
   useEffect(() => {
     let result = [...transactions];
 
@@ -77,125 +76,178 @@ export default function FinancesPage() {
   };
 
   return (
-    <div style={{ padding: '2rem 1.5rem', maxWidth: '1400px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ 
-          fontSize: 'clamp(2rem, 5vw, 2.8rem)', 
-          fontWeight: '700', 
-          marginBottom: '8px',
-          color: '#1e3a8a'
-        }}>
-          Church Finances
-        </h1>
-        <p style={{ color: '#64748b', fontSize: '1.1rem' }}>
-          Manage Tithes, Offerings, Welfare, Donations & Expenses • Currency: Cedis (₵)
-        </p>
-      </div>
+    <>
+      <style>{`
+        @media (max-width: 640px) {
+          .finances-quick-btns {
+            flex-direction: column !important;
+          }
+          .finances-quick-btns a {
+            width: 100% !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+          }
+          .finances-report-btns {
+            flex-direction: column !important;
+          }
+          .finances-report-btns a {
+            width: 100% !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+          }
+          .finances-desktop-table {
+            display: none !important;
+          }
+          .finances-mobile-cards {
+            display: block !important;
+          }
+        }
+        .finances-mobile-cards {
+          display: none;
+        }
+        .finances-mobile-card {
+          padding: 1rem 1.2rem;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .finances-mobile-card:last-child {
+          border-bottom: none;
+        }
+        .finances-mobile-card-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 4px;
+        }
+        .finances-mobile-card-member {
+          font-weight: 500;
+          font-size: 0.95rem;
+          margin-bottom: 4px;
+        }
+        .finances-mobile-card-meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 6px;
+        }
+      `}</style>
 
-      {/* Quick Record Buttons */}
-      <div style={{ 
-        marginBottom: '3rem', 
-        display: 'flex', 
-        gap: '1rem', 
-        flexWrap: 'wrap' 
-      }}>
-        <Link href="/dashboard/finances/record?type=tithe" style={{
-          padding: '16px 28px',
-          backgroundColor: '#10b981',
-          color: 'white',
-          borderRadius: '9999px',
-          textDecoration: 'none',
-          fontWeight: '600',
-          boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
-          transition: 'all 0.2s',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          + Record New Tithe & Welfare
-        </Link>
+      <div style={{ padding: '2rem 1.5rem', maxWidth: '1400px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ marginBottom: '2.5rem' }}>
+          <h1 style={{ 
+            fontSize: 'clamp(2rem, 5vw, 2.8rem)', 
+            fontWeight: '700', 
+            marginBottom: '8px',
+            color: '#1e3a8a'
+          }}>
+            Church Finances
+          </h1>
+          <p style={{ color: '#64748b', fontSize: '1.1rem' }}>
+            Manage Tithes, Offerings, Welfare, Donations & Expenses • Currency: Cedis (₵)
+          </p>
+        </div>
 
-        <Link href="/dashboard/finances/record?type=offering" style={{
-          padding: '16px 28px',
-          backgroundColor: '#4f46e5',
-          color: 'white',
-          borderRadius: '9999px',
-          textDecoration: 'none',
-          fontWeight: '600',
-          boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)',
-          transition: 'all 0.2s',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
+        {/* Quick Record Buttons */}
+        <div className="finances-quick-btns" style={{ 
+          marginBottom: '3rem', 
+          display: 'flex', 
+          gap: '1rem', 
+          flexWrap: 'wrap' 
         }}>
-          + Record New Offering & Donation
-        </Link>
-
-        <Link href="/dashboard/finances/spending" style={{
-          padding: '16px 28px',
-          backgroundColor: '#ef4444',
-          color: 'white',
-          borderRadius: '9999px',
-          textDecoration: 'none',
-          fontWeight: '600',
-          boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)',
-          transition: 'all 0.2s',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          Church Spending / Expense
-        </Link>
-      </div>
-
-      {/* Financial Reports */}
-      <div style={{ marginBottom: '3rem' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '1.2rem', color: '#1e3a8a' }}>
-          Financial Reports
-        </h2>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <Link href="/dashboard/finances/member-report" style={{
-            padding: '16px 32px',
-            backgroundColor: 'white',
-            border: '2px solid #4f46e5',
-            color: '#4f46e5',
+          <Link href="/dashboard/finances/record?type=tithe" style={{
+            padding: '16px 28px',
+            backgroundColor: '#10b981',
+            color: 'white',
             borderRadius: '9999px',
             textDecoration: 'none',
             fontWeight: '600',
-            transition: 'all 0.2s'
+            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
+            transition: 'all 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}>
-            📊 Member Financial History
+            + Record New Tithe & Welfare
           </Link>
 
-          <Link href="/dashboard/finances/church-report" style={{
-            padding: '16px 32px',
-            backgroundColor: 'white',
-            border: '2px solid #10b981',
-            color: '#10b981',
+          <Link href="/dashboard/finances/record?type=offering" style={{
+            padding: '16px 28px',
+            backgroundColor: '#4f46e5',
+            color: 'white',
             borderRadius: '9999px',
             textDecoration: 'none',
             fontWeight: '600',
-            transition: 'all 0.2s'
+            boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)',
+            transition: 'all 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}>
-            📈 Church Offerings & Contributions Report
+            + Record New Offering & Donation
+          </Link>
+
+          <Link href="/dashboard/finances/spending" style={{
+            padding: '16px 28px',
+            backgroundColor: '#ef4444',
+            color: 'white',
+            borderRadius: '9999px',
+            textDecoration: 'none',
+            fontWeight: '600',
+            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)',
+            transition: 'all 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            Church Spending / Expense
           </Link>
         </div>
-      </div>
 
-      {/* Search & Filter Bar */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '1.5rem',
-        borderRadius: '12px',
-        border: '1px solid #e5e7eb',
-        marginBottom: '2rem',
-        display: 'flex',
-        gap: '1rem',
-        flexWrap: 'wrap',
-        alignItems: 'end'
-      }}>
-        <div style={{ flex: 1, minWidth: '280px' }}>
+        {/* Financial Reports */}
+        <div style={{ marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '1.2rem', color: '#1e3a8a' }}>
+            Financial Reports
+          </h2>
+          <div className="finances-report-btns" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <Link href="/dashboard/finances/member-report" style={{
+              padding: '16px 32px',
+              backgroundColor: 'white',
+              border: '2px solid #4f46e5',
+              color: '#4f46e5',
+              borderRadius: '9999px',
+              textDecoration: 'none',
+              fontWeight: '600',
+              transition: 'all 0.2s'
+            }}>
+              📊 Member Financial History
+            </Link>
+
+            <Link href="/dashboard/finances/church-report" style={{
+              padding: '16px 32px',
+              backgroundColor: 'white',
+              border: '2px solid #10b981',
+              color: '#10b981',
+              borderRadius: '9999px',
+              textDecoration: 'none',
+              fontWeight: '600',
+              transition: 'all 0.2s'
+            }}>
+              📈 Church Offerings & Contributions Report
+            </Link>
+          </div>
+        </div>
+
+        {/* Search & Filter Bar */}
+        <div style={{
+          backgroundColor: 'white',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          border: '1px solid #e5e7eb',
+          marginBottom: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+        }}>
           <input
             type="text"
             placeholder="Search by member name or description..."
@@ -206,20 +258,21 @@ export default function FinancesPage() {
               padding: '14px 16px',
               border: '1px solid #d1d5db',
               borderRadius: '8px',
-              fontSize: '1rem'
+              fontSize: '1rem',
+              boxSizing: 'border-box'
             }}
           />
-        </div>
 
-        <div>
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
             style={{
+              width: '100%',
               padding: '14px 16px',
               border: '1px solid #d1d5db',
               borderRadius: '8px',
-              fontSize: '1rem'
+              fontSize: '1rem',
+              boxSizing: 'border-box'
             }}
           >
             <option value="All">All Types</option>
@@ -230,79 +283,116 @@ export default function FinancesPage() {
             <option value="Expense">Expense</option>
           </select>
         </div>
-      </div>
 
-      {/* Transactions Table */}
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        border: '1px solid #e5e7eb',
-        overflow: 'hidden'
-      }}>
-        <div style={{ 
-          padding: '1.8rem 2rem', 
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+        {/* Transactions Table */}
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          border: '1px solid #e5e7eb',
+          overflow: 'hidden'
         }}>
-          <h2 style={{ fontSize: '22px', fontWeight: '600', margin: 0 }}>Recent Transactions</h2>
-          <p style={{ fontWeight: '600', color: '#1e3a8a', margin: 0 }}>
-            Total: ₵{totalAmount.toLocaleString()}
-          </p>
-        </div>
+          <div style={{ 
+            padding: '1.8rem 2rem', 
+            borderBottom: '1px solid #e5e7eb',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <h2 style={{ fontSize: '22px', fontWeight: '600', margin: 0 }}>Recent Transactions</h2>
+            <p style={{ fontWeight: '600', color: '#1e3a8a', margin: 0 }}>
+              Total: ₵{totalAmount.toLocaleString()}
+            </p>
+          </div>
 
-        {loading ? (
-          <p style={{ textAlign: 'center', padding: '3rem' }}>Loading transactions...</p>
-        ) : filteredTransactions.length === 0 ? (
-          <p style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>No transactions found.</p>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
-              <thead>
-                <tr style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                  <th style={{ padding: '1.1rem', textAlign: 'left', fontWeight: '600' }}>Date</th>
-                  <th style={{ padding: '1.1rem', textAlign: 'left', fontWeight: '600' }}>Member</th>
-                  <th style={{ padding: '1.1rem', textAlign: 'left', fontWeight: '600' }}>Type</th>
-                  <th style={{ padding: '1.1rem', textAlign: 'right', fontWeight: '600' }}>Amount (₵)</th>
-                  <th style={{ padding: '1.1rem', textAlign: 'left', fontWeight: '600' }}>Description</th>
-                </tr>
-              </thead>
-              <tbody>
+          {loading ? (
+            <p style={{ textAlign: 'center', padding: '3rem' }}>Loading transactions...</p>
+          ) : filteredTransactions.length === 0 ? (
+            <p style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>No transactions found.</p>
+          ) : (
+            <>
+              {/* Desktop table */}
+              <div className="finances-desktop-table" style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                      <th style={{ padding: '1.1rem', textAlign: 'left', fontWeight: '600' }}>Date</th>
+                      <th style={{ padding: '1.1rem', textAlign: 'left', fontWeight: '600' }}>Member</th>
+                      <th style={{ padding: '1.1rem', textAlign: 'left', fontWeight: '600' }}>Type</th>
+                      <th style={{ padding: '1.1rem', textAlign: 'right', fontWeight: '600' }}>Amount (₵)</th>
+                      <th style={{ padding: '1.1rem', textAlign: 'left', fontWeight: '600' }}>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredTransactions.map((tx: Transaction) => (
+                      <tr key={tx.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '1.1rem' }}>{formatDate(tx.date)}</td>
+                        <td style={{ padding: '1.1rem', fontWeight: '500' }}>
+                          {tx.member ? `${tx.member.membershipNumber} - ${tx.member.fullName}` : '—'}
+                        </td>
+                        <td style={{ padding: '1.1rem' }}>
+                          <span style={{
+                            padding: '4px 12px',
+                            borderRadius: '9999px',
+                            fontSize: '0.9rem',
+                            backgroundColor: tx.type === 'Expense' ? '#fee2e2' : '#ecfdf5',
+                            color: tx.type === 'Expense' ? '#ef4444' : '#10b981'
+                          }}>
+                            {tx.type}
+                          </span>
+                        </td>
+                        <td style={{ 
+                          padding: '1.1rem', 
+                          textAlign: 'right', 
+                          fontWeight: '600',
+                          color: tx.type === 'Expense' ? '#ef4444' : '#10b981' 
+                        }}>
+                          {Number(tx.amount).toLocaleString()}
+                        </td>
+                        <td style={{ padding: '1.1rem', color: '#64748b' }}>{tx.description || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <div className="finances-mobile-cards">
                 {filteredTransactions.map((tx: Transaction) => (
-                  <tr key={tx.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '1.1rem' }}>{formatDate(tx.date)}</td>
-                    <td style={{ padding: '1.1rem', fontWeight: '500' }}>
-                      {tx.member ? `${tx.member.membershipNumber} - ${tx.member.fullName}` : '—'}
-                    </td>
-                    <td style={{ padding: '1.1rem' }}>
+                  <div key={tx.id} className="finances-mobile-card">
+                    <div className="finances-mobile-card-row">
+                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{formatDate(tx.date)}</span>
                       <span style={{
-                        padding: '4px 12px',
+                        fontWeight: '600',
+                        color: tx.type === 'Expense' ? '#ef4444' : '#10b981'
+                      }}>
+                        ₵{Number(tx.amount).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="finances-mobile-card-member">
+                      {tx.member ? `${tx.member.membershipNumber} - ${tx.member.fullName}` : '—'}
+                    </div>
+                    <div className="finances-mobile-card-meta">
+                      <span style={{
+                        padding: '3px 10px',
                         borderRadius: '9999px',
-                        fontSize: '0.9rem',
+                        fontSize: '0.8rem',
                         backgroundColor: tx.type === 'Expense' ? '#fee2e2' : '#ecfdf5',
                         color: tx.type === 'Expense' ? '#ef4444' : '#10b981'
                       }}>
                         {tx.type}
                       </span>
-                    </td>
-                    <td style={{ 
-                      padding: '1.1rem', 
-                      textAlign: 'right', 
-                      fontWeight: '600',
-                      color: tx.type === 'Expense' ? '#ef4444' : '#10b981' 
-                    }}>
-                      {Number(tx.amount).toLocaleString()}
-                    </td>
-                    <td style={{ padding: '1.1rem', color: '#64748b' }}>{tx.description || '—'}</td>
-                  </tr>
+                      {tx.description && (
+                        <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{tx.description}</span>
+                      )}
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
